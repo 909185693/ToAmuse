@@ -3,11 +3,11 @@
 using UnrealBuildTool;
 using System.Collections.Generic;
 
-public class ToAmuseTarget : TargetRules
+public class ToAmuseClientTarget : TargetRules
 {
-	public ToAmuseTarget(TargetInfo Target) : base(Target)
+	public ToAmuseClientTarget(TargetInfo Target) : base(Target)
 	{
-		Type = TargetType.Game;
+		Type = TargetType.Client;
 
 		ExtraModuleNames.AddRange( new string[] { "ToAmuse" } );
 	}
