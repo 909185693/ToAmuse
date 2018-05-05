@@ -30,3 +30,15 @@
 *.exe
 *.out
 *.app
+*.pdb
+*.db
+*.opendb
+
+# Folders
+DerivedDataCache
+Intermediate
+Saved
+Binaries
+.vs
+Content/ParagonKwang
+Content/Collections

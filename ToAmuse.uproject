@@ -1,0 +1,13 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{89F11EF0-4E19-6EDF-A138-B68AACDEFD4B}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "ToAmuse",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
