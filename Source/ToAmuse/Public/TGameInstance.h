@@ -11,7 +11,5 @@ class TOAMUSE_API UTGameInstance : public UGameInstance
 {
 	GENERATED_UCLASS_BODY()
 	
-	
-	
-	
+		
 };
