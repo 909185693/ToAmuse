@@ -1,6 +1,8 @@
 // Copyright 2018 by NiHongjian. All Rights Reserved.
 
 #include "TWeapon.h"
+#include "TGameplayStatics.h"
+#include "GameFramework/Character.h"
 
 
 ATWeapon::ATWeapon(const class FObjectInitializer& ObjectInitializer)
@@ -39,7 +41,7 @@ void ATWeapon::OnAction(int32 Stage)
 
 	LastActionTime = GetWorld()->TimeSeconds;
 
-	class ACharacter* Character = GetOwnerActor<ACharacter>();
+	class ACharacter* Character = Cast<ACharacter>(GetOwner());
 	if (Character != nullptr)
 	{
 		const FAction& Action = Actions[Stage];
@@ -48,7 +50,7 @@ void ATWeapon::OnAction(int32 Stage)
 
 		Character->PlayAnimMontage(Action.Montage, ActionSpeed);
 
-		UGameplayStatics::PlaySoundAtLocation(Action.Sound, GetActorLocation());
+		UTGameplayStatics::PlaySoundAtLocation(GetWorld(), Action.Sound, GetActorLocation());
 	}
 }
 
@@ -72,7 +74,7 @@ void ATWeapon::MulticastAction_Implementation(int32 Stage)
 
 void ATWeapon::ActionTick(float DeltaSeconds)
 {
-	class ACharacter* Character = GetOwnerActor<ACharacter>();
+	class ACharacter* Character = Cast<ACharacter>(GetOwner());
 	if (Character && Character->IsLocallyControlled())
 	{
 		CheckAction(false);
@@ -94,4 +96,9 @@ void ATWeapon::CheckAction(bool bIsForce)
 			ActionStage = (++ActionStage % Actions.Num());
 		}
 	}
+}
+
+const TEnumAsByte<enum ENetRole> ATWeapon::GetOwnerRole() const
+{
+	return GetOwner() ? GetOwner()->Role : ROLE_None;
 }

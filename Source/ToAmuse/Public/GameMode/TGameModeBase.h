@@ -6,6 +6,9 @@
 #include "TGameModeBase.generated.h"
 
 
+/**
+* ATGameModeBase
+*/
 UCLASS()
 class TOAMUSE_API ATGameModeBase : public AGameModeBase
 {

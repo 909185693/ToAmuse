@@ -5,6 +5,7 @@
 #include "GameFramework/Actor.h"
 #include "TWeapon.generated.h"
 
+
 USTRUCT()
 struct FAction
 {
@@ -20,9 +21,13 @@ struct FAction
 	class UAnimMontage* Montage;
 
 	UPROPERTY()
-	class USoundCub* Sound;
+	class USoundBase* Sound;
 };
 
+
+/**
+* ATWeapon
+*/
 UCLASS()
 class TOAMUSE_API ATWeapon : public AActor
 {
@@ -58,10 +63,5 @@ protected:
 
 	////////////////////////////////// Common ////////////////////////////////////////
 public:
-	template<class T> void GetOwnerActor<T>() const
-	{
-		return Cast<T>(GetOwner());
-	}
-
 	const TEnumAsByte<enum ENetRole> GetOwnerRole() const;
 };

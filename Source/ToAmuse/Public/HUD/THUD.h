@@ -6,6 +6,9 @@
 #include "THUD.generated.h"
 
 
+/**
+* ATHUD
+*/
 UCLASS()
 class TOAMUSE_API ATHUD : public AHUD
 {

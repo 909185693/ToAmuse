@@ -6,6 +6,9 @@
 #include "TGameInstance.generated.h"
 
 
+/**
+* UTGameInstance
+*/
 UCLASS()
 class TOAMUSE_API UTGameInstance : public UGameInstance
 {

@@ -6,6 +6,9 @@
 #include "TPlayerController.generated.h"
 
 
+/**
+* ATPlayerController
+*/
 UCLASS()
 class TOAMUSE_API ATPlayerController : public APlayerController
 {

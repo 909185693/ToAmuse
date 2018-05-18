@@ -6,6 +6,9 @@
 #include "TPlayerState.generated.h"
 
 
+/**
+* ATPlayerState
+*/
 UCLASS()
 class TOAMUSE_API ATPlayerState : public APlayerState
 {

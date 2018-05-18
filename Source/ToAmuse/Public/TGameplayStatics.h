@@ -8,6 +8,9 @@
 #include "TGameplayStatics.generated.h"
 
 
+/**
+* UTGameplayStatics
+*/
 UCLASS()
 class TOAMUSE_API UTGameplayStatics : public UGameplayStatics
 {
