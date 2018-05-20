@@ -40,4 +40,7 @@ void UTAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	const FRotator ComposeRotator = FRotator(BQuat*AQuat);
 
 	Direction = ComposeRotator.Yaw > 180.f ? ComposeRotator.Yaw - 360.f : ComposeRotator.Yaw;
+
+	// 旋转速度
+	RotationSpeed = OwnerPawn->RotationSpeed;
 }

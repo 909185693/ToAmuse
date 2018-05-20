@@ -31,5 +31,10 @@ protected:
 
 	/** 运动方向 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (ClampMin = "-180.0", ClampMax = "180.0"))
-	float Direction;	
+	float Direction;
+
+	/** 旋转速度 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (ClampMin = "-180.0", ClampMax = "180.0"))
+	float RotationSpeed;
+	
 };

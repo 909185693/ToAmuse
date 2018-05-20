@@ -31,6 +31,14 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseLookUpRate;
 
+	/** Rotation speed */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Pawn)
+	float RotationSpeed;
+
+	/** Rotation interp speed */
+	UPROPERTY(Transient, Replicated)
+	float RotationInterpSpeed;
+
 protected:
 	/** Input */
 	void MoveForward(float Val);

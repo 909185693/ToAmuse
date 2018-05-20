@@ -1,6 +1,7 @@
 // Copyright 2018 by NiHongjian. All Rights Reserved.
 
 #include "TCharacter.h"
+#include "ToAmuse.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -23,13 +24,15 @@ ATCharacter::ATCharacter(const class FObjectInitializer& ObjectInitializer)
 		FollowCamera->bUsePawnControlRotation = false;
 	}
 
+	GetCharacterMovement()->NavAgentProps.bCanJump = true;
+
 	// set our turn rates for input
 	BaseTurnRate = 45.f;
 	BaseLookUpRate = 45.f;
 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = true;
+	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 }
 
@@ -43,6 +46,18 @@ void ATCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	FRotator ControllerRotation = GetControlRotation();
+	FRotator PawnCurrentRotation = GetActorRotation();
+
+	ControllerRotation.Pitch = 0.f;
+	ControllerRotation.Roll = 0.f;
+
+	PawnCurrentRotation.Pitch = 0.f;
+	PawnCurrentRotation.Roll = 0.f;
+
+	const FRotator& PawnTargetRotation = FMath::RInterpConstantTo(PawnCurrentRotation, ControllerRotation, DeltaTime, RotationInterpSpeed);
+
+	OnScreenDebugMessage(1, FString::Printf(TEXT("PawnTargetRotation [%s]"), *PawnTargetRotation.ToCompactString()));
 }
 
 void ATCharacter::PostInitializeComponents()
@@ -109,4 +124,9 @@ void ATCharacter::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+}
+
+void ATCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	DOREPLIFETIME_CONDITION(ATCharacter, RotationSpeed, COND_SimulatedOnlyNoReplay);
 }
