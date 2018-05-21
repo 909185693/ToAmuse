@@ -3,11 +3,12 @@
 #include "TCharacter.h"
 #include "ToAmuse.h"
 #include "Camera/CameraComponent.h"
+#include "AdvancedMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
 
 ATCharacter::ATCharacter(const class FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UAdvancedMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	if (CameraBoom)
@@ -23,9 +24,7 @@ ATCharacter::ATCharacter(const class FObjectInitializer& ObjectInitializer)
 		FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 		FollowCamera->bUsePawnControlRotation = false;
 	}
-
-	GetCharacterMovement()->NavAgentProps.bCanJump = true;
-
+	
 	// set our turn rates for input
 	BaseTurnRate = 45.f;
 	BaseLookUpRate = 45.f;
