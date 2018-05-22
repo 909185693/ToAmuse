@@ -34,7 +34,19 @@ protected:
 	float Direction;
 
 	/** 旋转速度 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (ClampMin = "-180.0", ClampMax = "180.0"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	float RotationSpeed;
 	
+	/** 运动模式 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	TEnumAsByte<EMovementMode> MovementMode;
+
+	/** 下落速度 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	float FallSpeed;
+
+	/** 是否疾跑 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	uint32 bIsSprinting : 1;
+
 };

@@ -2,6 +2,7 @@
 
 #include "TAnimInstance.h"
 #include "TCharacter.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 
 UTAnimInstance::UTAnimInstance(const class FObjectInitializer& ObjectInitializer)
@@ -30,8 +31,7 @@ void UTAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	// 设置角色速度
 	const FVector Velocity = OwnerPawn->GetVelocity();
 
-	FVector OutDir;
-	Velocity.ToDirectionAndLength(OutDir, Speed);
+	Speed = Velocity.Size2D();
 
 	// 设置角色运动方向
 	const FRotator ActorRotator = OwnerPawn->GetActorRotation();
@@ -43,4 +43,24 @@ void UTAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	// 旋转速度
 	RotationSpeed = OwnerPawn->RotationSpeed;
+
+	// 移动模式
+	class UCharacterMovementComponent* MovementComponent = OwnerPawn ? OwnerPawn->GetCharacterMovement() : nullptr;
+	if (MovementComponent != nullptr)
+	{
+		MovementMode = MovementComponent->MovementMode;
+		//bIsJumping = OwnerPawn->IsJumpProvidingForce()
+
+		if (MovementMode == EMovementMode::MOVE_Falling)
+		{
+			FallSpeed = Velocity.Z;
+		}
+		else
+		{
+			FallSpeed = 0.f;
+		}
+	}
+
+	// 是否疾跑
+	bIsSprinting = OwnerPawn->bIsSprinting;
 }

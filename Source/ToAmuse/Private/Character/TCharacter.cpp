@@ -72,6 +72,9 @@ void ATCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	InputComponent->BindAction("Jump", IE_Pressed, this, &ATCharacter::Jump);
 	InputComponent->BindAction("Jump", IE_Released, this, &ATCharacter::StopJumping);
 
+	InputComponent->BindAction<FOnSprintAction, ATCharacter, bool>("Sprint", IE_Pressed, this, &ATCharacter::Sprint, false);
+	InputComponent->BindAction<FOnSprintAction, ATCharacter, bool>("Sprint", IE_Released, this, &ATCharacter::UnSprint, false);
+
 	InputComponent->BindAxis("MoveForward", this, &ATCharacter::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &ATCharacter::MoveRight);
 
@@ -125,7 +128,61 @@ void ATCharacter::LookUpAtRate(float Rate)
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
+void ATCharacter::Sprint(bool bClientSimulation)
+{
+	class UAdvancedMovementComponent* AdvancedMovement = Cast<UAdvancedMovementComponent>(GetCharacterMovement());
+	if (AdvancedMovement)
+	{
+		if (CanSprint())
+		{
+			AdvancedMovement->bWantsToSprint = true;
+		}
+	}
+}
+
+void ATCharacter::UnSprint(bool bClientSimulation)
+{
+	class UAdvancedMovementComponent* AdvancedMovement = Cast<UAdvancedMovementComponent>(GetCharacterMovement());
+	if (AdvancedMovement)
+	{
+		AdvancedMovement->bWantsToSprint = false;
+	}
+}
+
+bool ATCharacter::CanSprint()
+{
+	class UAdvancedMovementComponent* AdvancedMovement = Cast<UAdvancedMovementComponent>(GetCharacterMovement());
+	return !bIsSprinting && AdvancedMovement && AdvancedMovement->CanEverSrpint() && GetRootComponent() && !GetRootComponent()->IsSimulatingPhysics();
+}
+
+void ATCharacter::OnEndSprint()
+{
+
+}
+
+void ATCharacter::OnStartSprint()
+{
+
+}
+
+void ATCharacter::OnRep_IsSprinting()
+{
+	class UAdvancedMovementComponent* AdvancedMovement = Cast<UAdvancedMovementComponent>(GetCharacterMovement());
+	if (AdvancedMovement)
+	{
+		if (bIsSprinting)
+		{
+			AdvancedMovement->Sprint(true);
+		}
+		else
+		{
+			AdvancedMovement->UnSprint(true);
+		}
+	}
+}
+
 void ATCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
 	DOREPLIFETIME_CONDITION(ATCharacter, RotationSpeed, COND_SimulatedOnlyNoReplay);
+	DOREPLIFETIME_CONDITION(ATCharacter, bIsSprinting, COND_SimulatedOnly);
 }
