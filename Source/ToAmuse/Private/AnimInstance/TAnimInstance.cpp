@@ -34,22 +34,18 @@ void UTAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	Speed = Velocity.Size2D();
 
 	// 设置角色运动方向
-	const FRotator ActorRotator = OwnerPawn->GetActorRotation();
-	FQuat AQuat = FQuat(Velocity.Rotation());
-	FQuat BQuat = FQuat(ActorRotator.GetInverse());
-	const FRotator ComposeRotator = FRotator(BQuat*AQuat);
+	if (Speed > 0.f)
+	{
+		Direction = CalculateDirection(Velocity, OwnerPawn->GetActorRotation());
 
-	Direction = ComposeRotator.Yaw > 180.f ? ComposeRotator.Yaw - 360.f : ComposeRotator.Yaw;
-
-	// 旋转速度
-	RotationSpeed = OwnerPawn->RotationSpeed;
-
+		MovementDirection = ConvertDirection(Direction);
+	}
+		
 	// 移动模式
 	class UCharacterMovementComponent* MovementComponent = OwnerPawn ? OwnerPawn->GetCharacterMovement() : nullptr;
 	if (MovementComponent != nullptr)
 	{
 		MovementMode = MovementComponent->MovementMode;
-		//bIsJumping = OwnerPawn->IsJumpProvidingForce()
 
 		if (MovementMode == EMovementMode::MOVE_Falling)
 		{
@@ -63,4 +59,24 @@ void UTAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	// 是否疾跑
 	bIsSprinting = OwnerPawn->bIsSprinting;
+}
+
+const TEnumAsByte<EMovementDirection::Type> UTAnimInstance::ConvertDirection(float NewDirection) const
+{
+	if (NewDirection >= -45.f && NewDirection < 45.f)
+	{
+		return EMovementDirection::Fwd;
+	}
+	else if (NewDirection >= 45.f && NewDirection < 135.f)
+	{
+		return EMovementDirection::Right;
+	}
+	else if (NewDirection >= -135.f && NewDirection < -45.f)
+	{
+		return EMovementDirection::Left;
+	}
+	else
+	{
+		return EMovementDirection::Bwd;
+	}
 }

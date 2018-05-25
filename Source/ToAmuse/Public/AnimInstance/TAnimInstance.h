@@ -6,6 +6,18 @@
 #include "TAnimInstance.generated.h"
 
 
+UENUM(BlueprintType)
+namespace EMovementDirection
+{
+	enum Type
+	{
+		Fwd,
+		Bwd,
+		Left,
+		Right
+	};
+}
+
 /**
  * TAnimInstance
  */
@@ -21,6 +33,9 @@ public:
 	// for the bulk of the work to be done in NativeUpdateAnimation.
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
+	UFUNCTION(BlueprintCallable, Category="Animation")
+	const TEnumAsByte<EMovementDirection::Type> ConvertDirection(float NewDirection) const;
+
 protected:
 	UPROPERTY()
 	class ATCharacter* OwnerPawn;
@@ -32,11 +47,11 @@ protected:
 	/** 运动方向 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (ClampMin = "-180.0", ClampMax = "180.0"))
 	float Direction;
-
-	/** 旋转速度 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	float RotationSpeed;
 	
+	/** 运动方向 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	TEnumAsByte<EMovementDirection::Type> MovementDirection;
+
 	/** 运动模式 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	TEnumAsByte<EMovementMode> MovementMode;

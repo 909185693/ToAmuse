@@ -45,18 +45,18 @@ void ATCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	FRotator ControllerRotation = GetControlRotation();
-	FRotator PawnCurrentRotation = GetActorRotation();
+	//FRotator ControllerRotation = GetControlRotation();
+	//FRotator PawnCurrentRotation = GetActorRotation();
 
-	ControllerRotation.Pitch = 0.f;
-	ControllerRotation.Roll = 0.f;
+	//ControllerRotation.Pitch = 0.f;
+	//ControllerRotation.Roll = 0.f;
 
-	PawnCurrentRotation.Pitch = 0.f;
-	PawnCurrentRotation.Roll = 0.f;
+	//PawnCurrentRotation.Pitch = 0.f;
+	//PawnCurrentRotation.Roll = 0.f;
 
-	const FRotator& PawnTargetRotation = FMath::RInterpConstantTo(PawnCurrentRotation, ControllerRotation, DeltaTime, RotationInterpSpeed);
+	//const FRotator& PawnTargetRotation = FMath::RInterpConstantTo(PawnCurrentRotation, ControllerRotation, DeltaTime, RotationInterpSpeed);
 
-	OnScreenDebugMessage(1, FString::Printf(TEXT("PawnTargetRotation [%s]"), *PawnTargetRotation.ToCompactString()));
+	//OnScreenDebugMessage(1, FString::Printf(TEXT("PawnTargetRotation [%s]"), *PawnTargetRotation.ToCompactString()));
 }
 
 void ATCharacter::PostInitializeComponents()
@@ -183,6 +183,5 @@ void ATCharacter::OnRep_IsSprinting()
 
 void ATCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
-	DOREPLIFETIME_CONDITION(ATCharacter, RotationSpeed, COND_SimulatedOnlyNoReplay);
 	DOREPLIFETIME_CONDITION(ATCharacter, bIsSprinting, COND_SimulatedOnly);
 }

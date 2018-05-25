@@ -25,6 +25,7 @@ struct FAdvancedMovementProperties : public FNavAgentProperties
 	}
 };
 
+
 UCLASS()
 class TOAMUSE_API UAdvancedMovementComponent : public UCharacterMovementComponent
 {
@@ -86,4 +87,55 @@ public:
 
 	/** Update the character state in PerformMovement after the position change. Some rotation updates happen after this. */
 	virtual void UpdateCharacterStateAfterMovement();
+
+protected:
+	/** Unpack compressed flags from a saved move and set state accordingly. See FSavedMove_Character. */
+	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
+
+	/** If bUpdatePosition is true, then replay any unacked moves. Returns whether any moves were actually replayed. */
+	virtual bool ClientUpdatePositionAfterServerUpdate() override;
+
+	/** Get prediction data for a client game. Should not be used if not running as a client. Allocates the data on demand and can be overridden to allocate a custom override if desired. Result must be a FNetworkPredictionData_Client_Character. */
+	virtual class FNetworkPredictionData_Client* GetPredictionData_Client() const override;
 };
+
+
+////////////////////////////////// FSavedMove_TCharacter Begin ////////////////////////////////////////
+
+#define FLAG_WantsToSprint FSavedMove_Character::FLAG_Custom_0
+
+class FSavedMove_TCharacter : public FSavedMove_Character
+{
+public:
+	uint32 bWantsToSprint : 1;
+
+	/** Clear saved move properties, so it can be re-used. */
+	virtual void Clear() override;
+
+	/** @Return true if this move is an "important" move that should be sent again if not acked by the server */
+	virtual bool IsImportantMove(const FSavedMovePtr& LastAckedMove) const override;
+
+	/** @Return true if this move can be combined with NewMove for replication without changing any behavior */
+	virtual bool CanCombineWith(const FSavedMovePtr& NewMove, ACharacter* InPawn, float MaxDelta) const override;
+
+	/** Called to set up this saved move (when initially created) to make a predictive correction. */
+	virtual void SetMoveFor(ACharacter* C, float InDeltaTime, FVector const& NewAccel, class FNetworkPredictionData_Client_Character & ClientData);
+
+	/** @returns a byte containing encoded special movement information (jumping, crouching, etc.)	 */
+	virtual uint8 GetCompressedFlags() const override;
+};
+////////////////////////////////// FSavedMove_TCharacter End ////////////////////////////////////////
+
+
+////////////////////////////////// FNetworkPredictionData_Client_TCharacter Begin ////////////////////////////////////////
+
+class FNetworkPredictionData_Client_TCharacter : public FNetworkPredictionData_Client_Character
+{
+public:
+	FNetworkPredictionData_Client_TCharacter(const UAdvancedMovementComponent& ClientMovement);
+
+	/** Allocate a new saved move. Subclasses should override this if they want to use a custom move class. */
+	virtual FSavedMovePtr AllocateNewMove() override;
+};
+
+////////////////////////////////// FNetworkPredictionData_Client_TCharacter End ////////////////////////////////////////
