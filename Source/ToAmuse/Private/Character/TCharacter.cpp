@@ -89,6 +89,8 @@ void ATCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void ATCharacter::MoveForward(float Value)
 {
+	ForwardAxisValue = Value;
+
 	if ((Controller != NULL) && (Value != 0.0f))
 	{
 		// find out which way is forward
@@ -103,6 +105,8 @@ void ATCharacter::MoveForward(float Value)
 
 void ATCharacter::MoveRight(float Value)
 {
+	RightAxisValue = Value;
+
 	if ((Controller != NULL) && (Value != 0.0f))
 	{
 		// find out which way is right
@@ -183,5 +187,7 @@ void ATCharacter::OnRep_IsSprinting()
 
 void ATCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
 	DOREPLIFETIME_CONDITION(ATCharacter, bIsSprinting, COND_SimulatedOnly);
 }

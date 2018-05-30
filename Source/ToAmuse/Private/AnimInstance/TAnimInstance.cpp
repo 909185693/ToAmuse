@@ -2,7 +2,7 @@
 
 #include "TAnimInstance.h"
 #include "TCharacter.h"
-#include "GameFramework/CharacterMovementComponent.h"
+#include "AdvancedMovementComponent.h"
 
 
 UTAnimInstance::UTAnimInstance(const class FObjectInitializer& ObjectInitializer)
@@ -38,45 +38,76 @@ void UTAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		Direction = CalculateDirection(Velocity, OwnerPawn->GetActorRotation());
 
-		MovementDirection = ConvertDirection(Direction);
+		ConvertDirection(Direction, MovementDirection, CardinalDirection);
 	}
-		
+
 	// 移动模式
-	class UCharacterMovementComponent* MovementComponent = OwnerPawn ? OwnerPawn->GetCharacterMovement() : nullptr;
-	if (MovementComponent != nullptr)
+	class UAdvancedMovementComponent* AdvancedMovement = OwnerPawn ? Cast<UAdvancedMovementComponent>(OwnerPawn->GetCharacterMovement()) : nullptr;
+	if (AdvancedMovement != nullptr)
 	{
-		MovementMode = MovementComponent->MovementMode;
+		MovementMode = AdvancedMovement->MovementMode;
 
 		if (MovementMode == EMovementMode::MOVE_Falling)
 		{
 			FallSpeed = Velocity.Z;
+			InAirTime += DeltaSeconds;
 		}
 		else
 		{
 			FallSpeed = 0.f;
+			InAirTime = 0.f;
 		}
+
+		// 是否移动
+		bMoving = !FMath::IsNearlyZero(Speed, 1.0e-03f);
+
+		// 是否输入
+		bMovementInput = !AdvancedMovement->MovementInputVector.IsNearlyZero(1.0e-02f);
+
+		// 是否疾跑
+		bSprinting = OwnerPawn->bIsSprinting && Speed > AdvancedMovement->MaxWalkSpeed;
+
+		// 移动距离
+		MoveDistance = GetCurveValue(TEXT("DistanceCurve"));
 	}
 
-	// 是否疾跑
-	bIsSprinting = OwnerPawn->bIsSprinting;
 }
 
-const TEnumAsByte<EMovementDirection::Type> UTAnimInstance::ConvertDirection(float NewDirection) const
+void UTAnimInstance::ConvertDirection(float NewDirection, TEnumAsByte<EMovementDirection::Type>& OutMovementDirection, TEnumAsByte<ECardinalDirection::Type>& OutCardinalDirection) const
 {
 	if (NewDirection >= -45.f && NewDirection < 45.f)
 	{
-		return EMovementDirection::Fwd;
+		OutCardinalDirection = ECardinalDirection::Forwards;
 	}
 	else if (NewDirection >= 45.f && NewDirection < 135.f)
 	{
-		return EMovementDirection::Right;
+		OutCardinalDirection = ECardinalDirection::Rightwards;
 	}
 	else if (NewDirection >= -135.f && NewDirection < -45.f)
 	{
-		return EMovementDirection::Left;
+		OutCardinalDirection = ECardinalDirection::Leftwards;
 	}
 	else
 	{
-		return EMovementDirection::Bwd;
+		OutCardinalDirection = ECardinalDirection::Backwards;
 	}
+
+	if (NewDirection >= -90.f && NewDirection < 90.f)
+	{
+		OutMovementDirection = EMovementDirection::Forwards;
+	}
+	else
+	{
+		OutMovementDirection = EMovementDirection::Backwards;
+	}
+}
+
+void UTAnimInstance::AnimNotify_LeftPlant(UAnimNotify* Notify)
+{
+	FootPlant = EFootPlant::Left;
+}
+
+void UTAnimInstance::AnimNotify_RightPlant(UAnimNotify* Notify)
+{
+	FootPlant = EFootPlant::Right;
 }

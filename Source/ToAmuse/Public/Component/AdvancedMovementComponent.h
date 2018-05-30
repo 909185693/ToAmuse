@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "Net/UnrealNetwork.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "AdvancedMovementComponent.generated.h"
 
@@ -25,6 +26,14 @@ struct FAdvancedMovementProperties : public FNavAgentProperties
 	}
 };
 
+UENUM(BlueprintType)
+namespace ECustomMovementMode
+{
+	enum Type
+	{
+		MOVE_Ragdoll		UMETA(DisplayName = "Ragdoll"),
+	};
+}
 
 UCLASS()
 class TOAMUSE_API UAdvancedMovementComponent : public UCharacterMovementComponent
@@ -47,6 +56,14 @@ protected:
 	/** TCharacter movement component belongs to */
 	UPROPERTY(Transient, DuplicateTransient)
 	ATCharacter* TCharacterOwner;
+
+	/** TCharacter movement component belongs to */
+	UPROPERTY(Category = "Character Movement: MovementMode", BlueprintReadOnly)
+	TEnumAsByte<EMovementMode> PrevMovementMode;
+
+	/** TCharacter movement component belongs to */
+	UPROPERTY(Category = "Character Movement: MovementMode", BlueprintReadOnly)
+	uint8 PrevCustomMovementMode;
 
 public:	
 	// Called every frame
@@ -89,6 +106,9 @@ public:
 	virtual void UpdateCharacterStateAfterMovement();
 
 protected:
+	/** Called after MovementMode has changed. Base implementation does special handling for starting certain modes, then notifies the CharacterOwner. */
+	virtual void OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode) override;
+
 	/** Unpack compressed flags from a saved move and set state accordingly. See FSavedMove_Character. */
 	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
 
@@ -97,6 +117,20 @@ protected:
 
 	/** Get prediction data for a client game. Should not be used if not running as a client. Allocates the data on demand and can be overridden to allocate a custom override if desired. Result must be a FNetworkPredictionData_Client_Character. */
 	virtual class FNetworkPredictionData_Client* GetPredictionData_Client() const override;
+
+	////////////////////////////////// CustomMovementMode => Ragdoll ////////////////////////////////////////
+protected:
+	virtual void ToRagdoll();
+	virtual void UnRagdoll();
+
+public:
+	/** Movement input vector  */
+	UPROPERTY(Category = "Character Movement (Input)", Replicated, VisibleInstanceOnly, BlueprintReadOnly)
+	FVector MovementInputVector;
+
+protected:
+	UFUNCTION(Reliable, Server, WithValidation)
+	void SyncMovementInputVector(const FVector& NewMovementInputVector);
 };
 
 

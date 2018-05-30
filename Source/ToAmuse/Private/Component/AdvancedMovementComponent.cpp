@@ -2,7 +2,7 @@
 
 #include "AdvancedMovementComponent.h"
 #include "TCharacter.h"
-
+#include "ToAmuse.h"
 
 DECLARE_CYCLE_STAT(TEXT("Char ClientUpdatePositionAfterServerUpdate"), STAT_CharacterMovementClientUpdatePositionAfterServerUpdate, STATGROUP_Character);
 
@@ -14,13 +14,14 @@ UAdvancedMovementComponent::UAdvancedMovementComponent(const class FObjectInitia
 	GetAdvancedMovementProperties().bCanJump = true;
 	GetAdvancedMovementProperties().bCanSprint = true;
 
-	MaxWalkSpeed = 480.f;
-	MaxSprintSpeed = 640.f;
+	MaxWalkSpeed = 800.f;
+	MaxSprintSpeed = 1000.f;
 
-	JumpZVelocity = 600.f;
-	GroundFriction = 0.2f;
-	BrakingFrictionFactor = 0.1f;
-	BrakingDecelerationWalking = 512.f;
+	JumpZVelocity = 800.f;
+	MaxAcceleration = 256.f;
+	BrakingFrictionFactor = 1.f;
+	GroundFriction = 1.0f;
+	BrakingDecelerationWalking = 128.f;
 	BrakingDecelerationFalling = 0.2f;
 	AirControl = 0.2f;
 	AirControlBoostMultiplier = 5.f;
@@ -52,6 +53,28 @@ void UAdvancedMovementComponent::SetUpdatedComponent(USceneComponent* NewUpdated
 void UAdvancedMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (TCharacterOwner && TCharacterOwner->IsLocallyControlled())
+	{
+		const FVector LastInputVector = GetLastInputVector();
+		if (LastInputVector.IsNearlyZero(1.0e-03f))
+		{
+			FRotator ControlRotation = TCharacterOwner->GetControlRotation();
+
+			ControlRotation.Pitch = 0.f;
+			ControlRotation.Roll = 0.f;
+
+			MovementInputVector = ControlRotation.Vector() * TCharacterOwner->ForwardAxisValue + ControlRotation.Vector() * TCharacterOwner->RightAxisValue;
+		}
+		else
+		{
+			MovementInputVector = LastInputVector;
+		}
+
+		SyncMovementInputVector(MovementInputVector);
+
+		OnScreenDebugMessage(1, FString::Printf(TEXT("1.MovementInputVector[%s] ForwardAxisValue[%.2f] RightAxisValue[%0.2f]"), *MovementInputVector.ToCompactString(), TCharacterOwner->ForwardAxisValue, TCharacterOwner->RightAxisValue));
+	}
 }
 
 float UAdvancedMovementComponent::GetMaxSpeed() const
@@ -162,6 +185,14 @@ void UAdvancedMovementComponent::UpdateCharacterStateAfterMovement()
 struct FAdvancedMovementProperties& UAdvancedMovementComponent::GetAdvancedMovementProperties() const
 {
 	return (struct FAdvancedMovementProperties&)static_cast<const FAdvancedMovementProperties&>(NavAgentProps);
+}
+
+void UAdvancedMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode)
+{
+	Super::OnMovementModeChanged(PreviousMovementMode, PreviousCustomMode);
+
+	PrevMovementMode = PreviousMovementMode;
+	PrevCustomMovementMode = PreviousCustomMode;
 }
 
 void UAdvancedMovementComponent::UpdateFromCompressedFlags(uint8 Flags)
@@ -298,6 +329,31 @@ FNetworkPredictionData_Client* UAdvancedMovementComponent::GetPredictionData_Cli
 	}
 
 	return ClientPredictionData;
+}
+
+void UAdvancedMovementComponent::ToRagdoll()
+{
+
+}
+
+void UAdvancedMovementComponent::UnRagdoll()
+{
+
+}
+
+bool UAdvancedMovementComponent::SyncMovementInputVector_Validate(const FVector& NewMovementInputVector)
+{
+	return true;
+}
+
+void UAdvancedMovementComponent::SyncMovementInputVector_Implementation(const FVector& NewMovementInputVector)
+{
+	MovementInputVector = NewMovementInputVector;
+}
+
+void UAdvancedMovementComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	DOREPLIFETIME_CONDITION(UAdvancedMovementComponent, MovementInputVector, COND_SkipOwner);
 }
 
 ////////////////////////////////// FSavedMove_TCharacter Begin ////////////////////////////////////////
