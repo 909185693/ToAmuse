@@ -104,10 +104,42 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	TEnumAsByte<EFootPlant::Type> FootPlant;
 
-	/** µ±«∞“∆∂Øæ‡¿Î */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	float MoveDistance;
+protected:
+	UPROPERTY(BlueprintReadOnly, Category = Rotator)
+	FRotator ActorRotation;
 
+	UPROPERTY(BlueprintReadOnly, Category = Rotator)
+	FRotator BaseAimRotation;
+
+	UPROPERTY(BlueprintReadOnly, Category = Rotator)
+	FRotator LastVelocityRotation;
+	
+	UPROPERTY(BlueprintReadOnly, Category = Rotator)
+	FRotator TargetRotation;
+
+	UPROPERTY(BlueprintReadOnly, Category = Rotator)
+	FRotator CharacterRotation;
+
+protected:
+	UPROPERTY(BlueprintReadOnly, Category = Position)
+	float FootPosition;
+
+	UPROPERTY(BlueprintReadOnly, Category = Position)
+	float FootPositionDirection;
+
+protected:
+	UPROPERTY(BlueprintReadOnly, Category = LeaningValues)
+	FRotator PreviousVelocityRotation;
+
+	UPROPERTY(BlueprintReadOnly, Category = LeaningValues)
+	float YawValue;
+
+	UPROPERTY(BlueprintReadOnly, Category = LeaningValues)
+	float PreviousSpeed;
+	
+	UPROPERTY(BlueprintReadOnly, Category = LeaningValues)
+	float AccelerationValue;
+	
 protected:
 	UFUNCTION()
 	void AnimNotify_LeftPlant(UAnimNotify* Notify);

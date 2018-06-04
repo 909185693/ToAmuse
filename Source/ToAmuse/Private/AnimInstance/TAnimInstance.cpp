@@ -34,12 +34,12 @@ void UTAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	Speed = Velocity.Size2D();
 
 	// 设置角色运动方向
-	if (Speed > 0.f)
-	{
-		Direction = CalculateDirection(Velocity, OwnerPawn->GetActorRotation());
+	//if (Speed > 0.f)
+	//{
+	//	Direction = CalculateDirection(Velocity, OwnerPawn->GetActorRotation());
 
-		ConvertDirection(Direction, MovementDirection, CardinalDirection);
-	}
+	//	ConvertDirection(Direction, MovementDirection, CardinalDirection);
+	//}
 
 	// 移动模式
 	class UAdvancedMovementComponent* AdvancedMovement = OwnerPawn ? Cast<UAdvancedMovementComponent>(OwnerPawn->GetCharacterMovement()) : nullptr;
@@ -66,11 +66,32 @@ void UTAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 		// 是否疾跑
 		bSprinting = OwnerPawn->bIsSprinting && Speed > AdvancedMovement->MaxWalkSpeed;
-
-		// 移动距离
-		MoveDistance = GetCurveValue(TEXT("DistanceCurve"));
 	}
 
+	// 旋转度
+	if (bMoving)
+	{
+		CharacterRotation = OwnerPawn->GetActorRotation();
+
+		LastVelocityRotation = FVector(Velocity.X, Velocity.Y, 0.f).Rotation();
+		
+		Direction = (LastVelocityRotation - CharacterRotation).GetNormalized().Yaw;
+
+		ConvertDirection(Direction, MovementDirection, CardinalDirection);
+	}
+
+	// LeaningValues
+	YawValue = (LastVelocityRotation - PreviousVelocityRotation).GetNormalized().Yaw / DeltaSeconds;
+
+	PreviousVelocityRotation = LastVelocityRotation;
+
+	float TargetLeanRotation = FMath::GetMappedRangeValueClamped(FVector2D(-200.f, 200.f), FVector2D(-1.f, 1.f), YawValue) * FMath::GetMappedRangeValueClamped(FVector2D(165, 375.f), FVector2D(0.f, 1.f), Speed);
+
+	LeanRotation = 
+
+	FootPosition = GetCurveValue(TEXT("FootPosition"));
+
+	FootPositionDirection = GetCurveValue(TEXT("FootPositionDirection"));
 }
 
 void UTAnimInstance::ConvertDirection(float NewDirection, TEnumAsByte<EMovementDirection::Type>& OutMovementDirection, TEnumAsByte<ECardinalDirection::Type>& OutCardinalDirection) const

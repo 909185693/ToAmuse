@@ -10,6 +10,8 @@
 ATCharacter::ATCharacter(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UAdvancedMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
+	GetCapsuleComponent()->InitCapsuleSize(90.f, 30.f);
+
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	if (CameraBoom)
 	{

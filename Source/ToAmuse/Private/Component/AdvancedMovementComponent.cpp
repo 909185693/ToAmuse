@@ -14,14 +14,14 @@ UAdvancedMovementComponent::UAdvancedMovementComponent(const class FObjectInitia
 	GetAdvancedMovementProperties().bCanJump = true;
 	GetAdvancedMovementProperties().bCanSprint = true;
 
-	MaxWalkSpeed = 800.f;
-	MaxSprintSpeed = 1000.f;
+	MaxWalkSpeed = 375.f;
+	MaxSprintSpeed = 600.f;
 
-	JumpZVelocity = 800.f;
-	MaxAcceleration = 256.f;
+	JumpZVelocity = 600.f;
+	MaxAcceleration = 1024.f;
 	BrakingFrictionFactor = 1.f;
 	GroundFriction = 1.0f;
-	BrakingDecelerationWalking = 128.f;
+	BrakingDecelerationWalking = 512.f;
 	BrakingDecelerationFalling = 0.2f;
 	AirControl = 0.2f;
 	AirControlBoostMultiplier = 5.f;

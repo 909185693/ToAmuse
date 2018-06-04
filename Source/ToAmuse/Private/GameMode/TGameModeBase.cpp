@@ -9,7 +9,7 @@
 ATGameModeBase::ATGameModeBase(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	static ConstructorHelpers::FClassFinder<APawn> PawnClassFinder(TEXT("/Game/Blueprints/Character/BP_Pawn_FengMao"));
+	static ConstructorHelpers::FClassFinder<APawn> PawnClassFinder(TEXT("/Game/Blueprints/Character/CharacterBP_Mannequin"));
 	if (PawnClassFinder.Succeeded())
 	{
 		DefaultPawnClass = PawnClassFinder.Class;
