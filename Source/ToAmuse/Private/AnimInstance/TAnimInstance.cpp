@@ -3,6 +3,7 @@
 #include "TAnimInstance.h"
 #include "TCharacter.h"
 #include "AdvancedMovementComponent.h"
+#include "ToAmuse.h"
 
 
 UTAnimInstance::UTAnimInstance(const class FObjectInitializer& ObjectInitializer)
@@ -46,6 +47,7 @@ void UTAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (AdvancedMovement != nullptr)
 	{
 		MovementMode = AdvancedMovement->MovementMode;
+		PrevMovementMode = AdvancedMovement->PrevMovementMode;
 
 		if (MovementMode == EMovementMode::MOVE_Falling)
 		{
@@ -57,6 +59,8 @@ void UTAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 			FallSpeed = 0.f;
 			InAirTime = 0.f;
 		}
+
+		JumpZVelocity = AdvancedMovement->JumpZVelocity;
 
 		// 是否移动
 		bMoving = !FMath::IsNearlyZero(Speed, 1.0e-03f);
@@ -85,10 +89,14 @@ void UTAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	PreviousVelocityRotation = LastVelocityRotation;
 
-	float TargetLeanRotation = FMath::GetMappedRangeValueClamped(FVector2D(-200.f, 200.f), FVector2D(-1.f, 1.f), YawValue) * FMath::GetMappedRangeValueClamped(FVector2D(165, 375.f), FVector2D(0.f, 1.f), Speed);
+	BaseAimRotation = OwnerPawn->GetBaseAimRotation();
 
-	LeanRotation = 
+	const FRotator& AimOffsetRotation = (BaseAimRotation - CharacterRotation).GetNormalized();
+	const float AimmOffsetInterpSpeed = FMath::GetMappedRangeValueClamped(FVector2D(0.f, 180.f), FVector2D(15.f, 5.f), AimOffsetRotation.Yaw - AimOffset.X);
+	AimOffset = FMath::Vector2DInterpTo(AimOffset, FVector2D(AimOffsetRotation.Yaw, AimOffsetRotation.Pitch), DeltaSeconds, AimmOffsetInterpSpeed);
 
+	//float TargetLeanRotation = FMath::GetMappedRangeValueClamped(FVector2D(-200.f, 200.f), FVector2D(-1.f, 1.f), YawValue) * FMath::GetMappedRangeValueClamped(FVector2D(165, 375.f), FVector2D(0.f, 1.f), Speed);
+	
 	FootPosition = GetCurveValue(TEXT("FootPosition"));
 
 	FootPositionDirection = GetCurveValue(TEXT("FootPositionDirection"));
@@ -123,12 +131,24 @@ void UTAnimInstance::ConvertDirection(float NewDirection, TEnumAsByte<EMovementD
 	}
 }
 
-void UTAnimInstance::AnimNotify_LeftPlant(UAnimNotify* Notify)
+void UTAnimInstance::AnimNotify_Falling()
 {
-	FootPlant = EFootPlant::Left;
-}
+	class UCapsuleComponent* CapsuleComponent = OwnerPawn ? OwnerPawn->GetCapsuleComponent() : nullptr;
+	if (CapsuleComponent != nullptr)
+	{
+		FPredictProjectilePathParams PredictProjectilePathParams;
+		PredictProjectilePathParams.StartLocation = CapsuleComponent->GetComponentLocation() - FVector(0.f, 0.f, CapsuleComponent->GetScaledCapsuleHalfHeight_WithoutHemisphere());
+		PredictProjectilePathParams.LaunchVelocity = OwnerPawn->GetVelocity();
+		PredictProjectilePathParams.ProjectileRadius = CapsuleComponent->GetScaledCapsuleRadius() - 5.f;
+		PredictProjectilePathParams.bTraceWithCollision = true;
+		PredictProjectilePathParams.bTraceWithChannel = true;
 
-void UTAnimInstance::AnimNotify_RightPlant(UAnimNotify* Notify)
-{
-	FootPlant = EFootPlant::Right;
+		FPredictProjectilePathResult PredictProjectilePathResult;
+
+		UGameplayStatics::PredictProjectilePath(GetWorld(), PredictProjectilePathParams, PredictProjectilePathResult);
+
+		PredictedInAirTime = PredictProjectilePathResult.LastTraceDestination.Time;
+		bUsePredictedAirTime = (PredictProjectilePathResult.HitResult.bBlockingHit && PredictProjectilePathResult.HitResult.ImpactNormal.Z >= OwnerPawn->GetCharacterMovement()->GetWalkableFloorZ()) || !PredictProjectilePathResult.HitResult.bBlockingHit;
+		InAirTime = 0.f;
+	}
 }

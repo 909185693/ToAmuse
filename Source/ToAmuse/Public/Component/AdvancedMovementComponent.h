@@ -45,18 +45,14 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void PostLoad() override;
 	virtual void SetUpdatedComponent(USceneComponent* NewUpdatedComponent) override;
-
+	
 public:
 	//BEGIN UAdvancedMovementComponent Interface
 	virtual float GetMaxSpeed() const override;
 	virtual bool IsSprinting() const;
 	//BEGIN UAdvancedMovementComponent Interface
 
-protected:
-	/** TCharacter movement component belongs to */
-	UPROPERTY(Transient, DuplicateTransient)
-	ATCharacter* TCharacterOwner;
-
+public:
 	/** TCharacter movement component belongs to */
 	UPROPERTY(Category = "Character Movement: MovementMode", BlueprintReadOnly)
 	TEnumAsByte<EMovementMode> PrevMovementMode;
@@ -64,6 +60,11 @@ protected:
 	/** TCharacter movement component belongs to */
 	UPROPERTY(Category = "Character Movement: MovementMode", BlueprintReadOnly)
 	uint8 PrevCustomMovementMode;
+
+protected:
+	/** TCharacter movement component belongs to */
+	UPROPERTY(Transient, DuplicateTransient)
+	ATCharacter* TCharacterOwner;
 
 public:	
 	// Called every frame

@@ -88,6 +88,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	TEnumAsByte<EMovementMode> MovementMode;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	TEnumAsByte<EMovementMode> PrevMovementMode;
+
 	/** 下落速度 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	float FallSpeed;
@@ -96,13 +99,25 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	float InAirTime;
 
+	/** 跳跃发射速度 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	float JumpZVelocity;
+
+	/** 是否预测空中时间 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	uint32 bUsePredictedAirTime : 1;
+
+	/** 预测空中时间 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	float PredictedInAirTime;
+	
 	/** 是否疾跑 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	uint32 bSprinting : 1;
 
-	/** 脚步 */
+	/** 偏移 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	TEnumAsByte<EFootPlant::Type> FootPlant;
+	FVector2D AimOffset;
 
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = Rotator)
@@ -139,11 +154,8 @@ protected:
 	
 	UPROPERTY(BlueprintReadOnly, Category = LeaningValues)
 	float AccelerationValue;
-	
+
 protected:
 	UFUNCTION()
-	void AnimNotify_LeftPlant(UAnimNotify* Notify);
-
-	UFUNCTION()
-	void AnimNotify_RightPlant(UAnimNotify* Notify);
+	void AnimNotify_Falling();
 };
