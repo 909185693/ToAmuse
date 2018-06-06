@@ -18,6 +18,38 @@ void UTAnimInstance::NativeInitializeAnimation()
 
 	USkeletalMeshComponent* OwnerComponent = GetSkelMeshComponent();
 	OwnerPawn = OwnerComponent ? Cast<ATCharacter>(OwnerComponent->GetOwner()) : nullptr;
+
+	if (OwnerPawn != nullptr)
+	{
+		CharacterRotation = OwnerPawn->GetActorRotation();
+	}
+}
+
+void UTAnimInstance::UpdateMeshRotation(float DeltaSeconds)
+{
+	if (OwnerPawn != nullptr)
+	{
+		FRotator TargetRotation = CharacterRotation + FRotator(0.f, -90.f, 0.f);
+
+		OwnerPawn->GetMesh()->SetWorldRotation(TargetRotation);
+	}
+}
+
+bool UTAnimInstance::WasWhetherRange(float Value, float MinRangeTrue, float MaxRangeTrue, float MinRangeFalse, float MaxRangeFlase, bool bWhether)
+{
+	return (Value >= (bWhether ? MinRangeTrue : MinRangeFalse)) && (Value <= (bWhether ? MaxRangeTrue : MaxRangeFlase));
+}
+
+void UTAnimInstance::SetCharacterRotation(const FRotator& TargetRotation, bool bInterpRotation, float InterpSpeed, float DeltaSeconds)
+{
+	if (bInterpRotation)
+	{
+		CharacterRotation = FMath::RInterpTo(CharacterRotation, TargetRotation, DeltaSeconds, InterpSpeed);
+	}
+	else
+	{
+		CharacterRotation = TargetRotation;
+	}
 }
 
 void UTAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -33,14 +65,6 @@ void UTAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	const FVector Velocity = OwnerPawn->GetVelocity();
 
 	Speed = Velocity.Size2D();
-
-	// 设置角色运动方向
-	//if (Speed > 0.f)
-	//{
-	//	Direction = CalculateDirection(Velocity, OwnerPawn->GetActorRotation());
-
-	//	ConvertDirection(Direction, MovementDirection, CardinalDirection);
-	//}
 
 	// 移动模式
 	class UAdvancedMovementComponent* AdvancedMovement = OwnerPawn ? Cast<UAdvancedMovementComponent>(OwnerPawn->GetCharacterMovement()) : nullptr;
@@ -73,30 +97,70 @@ void UTAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	}
 
 	// 旋转度
-	if (bMoving)
-	{
-		CharacterRotation = OwnerPawn->GetActorRotation();
-
-		LastVelocityRotation = FVector(Velocity.X, Velocity.Y, 0.f).Rotation();
-		
-		Direction = (LastVelocityRotation - CharacterRotation).GetNormalized().Yaw;
-
-		ConvertDirection(Direction, MovementDirection, CardinalDirection);
-	}
-
-	// LeaningValues
-	YawValue = (LastVelocityRotation - PreviousVelocityRotation).GetNormalized().Yaw / DeltaSeconds;
-
-	PreviousVelocityRotation = LastVelocityRotation;
+	ActorRotation = OwnerPawn->GetActorRotation();
 
 	BaseAimRotation = OwnerPawn->GetBaseAimRotation();
+
+	if (bMoving)
+	{
+		float LastVelocityDeltaYaw = (ActorRotation - LastVelocityRotation).GetNormalized().Yaw;
+		
+		if (bSprinting)
+		{
+			CardinalDirection = ECardinalDirection::Forwards;
+
+			MovementDirection = EMovementDirection::Forwards;
+
+			RotationOffset = LastVelocityDeltaYaw;
+
+			SetCharacterRotation(LastVelocityRotation, true, FMath::GetMappedRangeValueClamped(FVector2D(0.f, 600.f), FVector2D(1.f, 10.f), Speed), DeltaSeconds);
+		}
+		else
+		{
+			CardinalDirection = WasWhetherRange(LastVelocityDeltaYaw, -100.f, 100.f, -80.f, 80.f, CardinalDirection != ECardinalDirection::Backwards) ? ECardinalDirection::Forwards : ECardinalDirection::Backwards;
+
+			MovementDirection = WasWhetherRange(LastVelocityDeltaYaw, -100.f, 100.f, -80.f, 80.f, MovementDirection == EMovementDirection::Forwards) ? EMovementDirection::Forwards : EMovementDirection::Backwards;
+
+			const float TargetRotationOffset = CardinalDirection == ECardinalDirection::Backwards ? (LastVelocityDeltaYaw > 0.f ? LastVelocityDeltaYaw - 180.f : LastVelocityDeltaYaw + 180.f) : LastVelocityDeltaYaw;
+
+			RotationOffset = FMath::FInterpTo(RotationOffset, TargetRotationOffset, DeltaSeconds, 5.f);
+
+			SetCharacterRotation(ActorRotation + FRotator(0.f, RotationOffset, 0.f), true, FMath::GetMappedRangeValueClamped(FVector2D(165.f, 375.f), FVector2D(5.f, 8.f), Speed), DeltaSeconds);
+		}
+
+		LastVelocityRotation = FVector(Velocity.X, Velocity.Y, 0.f).Rotation();
+
+		Direction = (LastVelocityRotation - CharacterRotation).GetNormalized().Yaw;
+	}
 
 	const FRotator& AimOffsetRotation = (BaseAimRotation - CharacterRotation).GetNormalized();
 	const float AimmOffsetInterpSpeed = FMath::GetMappedRangeValueClamped(FVector2D(0.f, 180.f), FVector2D(15.f, 5.f), AimOffsetRotation.Yaw - AimOffset.X);
 	AimOffset = FMath::Vector2DInterpTo(AimOffset, FVector2D(AimOffsetRotation.Yaw, AimOffsetRotation.Pitch), DeltaSeconds, AimmOffsetInterpSpeed);
 
-	//float TargetLeanRotation = FMath::GetMappedRangeValueClamped(FVector2D(-200.f, 200.f), FVector2D(-1.f, 1.f), YawValue) * FMath::GetMappedRangeValueClamped(FVector2D(165, 375.f), FVector2D(0.f, 1.f), Speed);
+	UpdateMeshRotation(DeltaSeconds);
+
+	// LeanRotation
+	YawValue = (LastVelocityRotation - PreviousVelocityRotation).GetNormalized().Yaw / DeltaSeconds;
+
+	PreviousVelocityRotation = LastVelocityRotation;
+
+	float TargetLeanRotation = FMath::GetMappedRangeValueClamped(FVector2D(-200.f, 200.f), FVector2D(-1.f, 1.f), FMath::Clamp(YawValue, -200.f, 200.f)) * FMath::GetMappedRangeValueClamped(FVector2D(165, 375.f), FVector2D(0.f, 1.f), Speed);
 	
+	float LeanSpeedRatio = FMath::GetMappedRangeValueClamped(FVector2D(165.f, 375.f), FVector2D(0, 1.f), Speed);
+
+	LeanRotation = FMath::FInterpTo(LeanRotation, TargetLeanRotation * LeanSpeedRatio, DeltaSeconds, 8.f);
+
+	// LeanAcceleration
+	AccelerationValue = (Speed - PreviousSpeed) / DeltaSeconds;
+
+	PreviousSpeed = Speed;
+
+	const FVector2D LeanAccelerationInRange = AccelerationValue < 0.f ? FVector2D(0.f, -1.f * AdvancedMovement->BrakingDecelerationWalking) : FVector2D(0.f, AdvancedMovement->GetMaxAcceleration());
+	const FVector2D LeanAccelerationOutRange = AccelerationValue < 0.f ? FVector2D(0.f, -1.f) : FVector2D(0.f, 1.f);
+
+	LeanAcceleration = FMath::FInterpTo(LeanAcceleration, FMath::GetMappedRangeValueClamped(LeanAccelerationInRange, LeanAccelerationOutRange, AccelerationValue), DeltaSeconds, 8.f);
+
+	// Curve
 	FootPosition = GetCurveValue(TEXT("FootPosition"));
 
 	FootPositionDirection = GetCurveValue(TEXT("FootPositionDirection"));

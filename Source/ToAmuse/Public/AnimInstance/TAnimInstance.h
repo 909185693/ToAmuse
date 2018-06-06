@@ -56,6 +56,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Animation")
 	void ConvertDirection(float NewDirection, TEnumAsByte<EMovementDirection::Type>& OutMovementDirection, TEnumAsByte<ECardinalDirection::Type>& OutCardinalDirection) const;
 
+	UFUNCTION(BlueprintCallable, Category = "Animation")
+	void UpdateMeshRotation(float DeltaSeconds);
+
+	UFUNCTION(BlueprintCallable, Category = "Animation")
+	void SetCharacterRotation(const FRotator& TargetRotation, bool bInterpRotation = false, float InterpSpeed = 0.f, float DeltaSeconds = 0.f);
+
+	UFUNCTION(BlueprintCallable, Category = "Animation")
+	bool WasWhetherRange(float Value, float MinRangeTrue, float MaxRangeTrue, float MinRangeFalse, float MaxRangeFlase, bool bWhether);
+
 protected:
 	UPROPERTY()
 	class ATCharacter* OwnerPawn;
@@ -135,6 +144,15 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = Rotator)
 	FRotator CharacterRotation;
 
+	UPROPERTY(BlueprintReadOnly, Category = Rotator)
+	uint32 bShouldRotateInPlace : 1;
+	
+	UPROPERTY(BlueprintReadOnly, Category = Rotator)
+	float RotationOffset;
+
+	UPROPERTY(BlueprintReadOnly, Category = Rotator)
+	float LeanRotation;
+
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = Position)
 	float FootPosition;
@@ -154,6 +172,9 @@ protected:
 	
 	UPROPERTY(BlueprintReadOnly, Category = LeaningValues)
 	float AccelerationValue;
+
+	UPROPERTY(BlueprintReadOnly, Category = LeaningValues)
+	float LeanAcceleration;
 
 protected:
 	UFUNCTION()

@@ -10,6 +10,8 @@
 ATCharacter::ATCharacter(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UAdvancedMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
+	GetMesh()->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::AlwaysTickPoseAndRefreshBones;
+
 	GetCapsuleComponent()->InitCapsuleSize(90.f, 30.f);
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -33,7 +35,7 @@ ATCharacter::ATCharacter(const class FObjectInitializer& ObjectInitializer)
 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
+	bUseControllerRotationYaw = true;
 	bUseControllerRotationRoll = false;
 }
 
