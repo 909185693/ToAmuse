@@ -40,6 +40,28 @@ bool UTAnimInstance::WasWhetherRange(float Value, float MinRangeTrue, float MaxR
 	return (Value >= (bWhether ? MinRangeTrue : MinRangeFalse)) && (Value <= (bWhether ? MaxRangeTrue : MaxRangeFlase));
 }
 
+void UTAnimInstance::InAirTrace(float& OutPredictedInAirTime, bool& OutUsePredictedAirTime, float& OutInAirTime) const
+{
+	class UCapsuleComponent* CapsuleComponent = OwnerPawn ? OwnerPawn->GetCapsuleComponent() : nullptr;
+	if (CapsuleComponent != nullptr)
+	{
+		FPredictProjectilePathParams PredictProjectilePathParams;
+		PredictProjectilePathParams.StartLocation = CapsuleComponent->GetComponentLocation() - FVector(0.f, 0.f, CapsuleComponent->GetScaledCapsuleHalfHeight_WithoutHemisphere());
+		PredictProjectilePathParams.LaunchVelocity = OwnerPawn->GetVelocity();
+		PredictProjectilePathParams.ProjectileRadius = CapsuleComponent->GetScaledCapsuleRadius() - 5.f;
+		PredictProjectilePathParams.bTraceWithCollision = true;
+		PredictProjectilePathParams.bTraceWithChannel = true;
+
+		FPredictProjectilePathResult PredictProjectilePathResult;
+
+		UGameplayStatics::PredictProjectilePath(GetWorld(), PredictProjectilePathParams, PredictProjectilePathResult);
+
+		OutPredictedInAirTime = PredictProjectilePathResult.LastTraceDestination.Time;
+		OutUsePredictedAirTime = (PredictProjectilePathResult.HitResult.bBlockingHit && PredictProjectilePathResult.HitResult.ImpactNormal.Z >= OwnerPawn->GetCharacterMovement()->GetWalkableFloorZ()) || !PredictProjectilePathResult.HitResult.bBlockingHit;
+		OutInAirTime = 0.f;
+	}
+}
+
 void UTAnimInstance::SetCharacterRotation(const FRotator& TargetRotation, bool bInterpRotation, float InterpSpeed, float DeltaSeconds)
 {
 	if (bInterpRotation)
@@ -192,27 +214,5 @@ void UTAnimInstance::ConvertDirection(float NewDirection, TEnumAsByte<EMovementD
 	else
 	{
 		OutMovementDirection = EMovementDirection::Backwards;
-	}
-}
-
-void UTAnimInstance::AnimNotify_Falling()
-{
-	class UCapsuleComponent* CapsuleComponent = OwnerPawn ? OwnerPawn->GetCapsuleComponent() : nullptr;
-	if (CapsuleComponent != nullptr)
-	{
-		FPredictProjectilePathParams PredictProjectilePathParams;
-		PredictProjectilePathParams.StartLocation = CapsuleComponent->GetComponentLocation() - FVector(0.f, 0.f, CapsuleComponent->GetScaledCapsuleHalfHeight_WithoutHemisphere());
-		PredictProjectilePathParams.LaunchVelocity = OwnerPawn->GetVelocity();
-		PredictProjectilePathParams.ProjectileRadius = CapsuleComponent->GetScaledCapsuleRadius() - 5.f;
-		PredictProjectilePathParams.bTraceWithCollision = true;
-		PredictProjectilePathParams.bTraceWithChannel = true;
-
-		FPredictProjectilePathResult PredictProjectilePathResult;
-
-		UGameplayStatics::PredictProjectilePath(GetWorld(), PredictProjectilePathParams, PredictProjectilePathResult);
-
-		PredictedInAirTime = PredictProjectilePathResult.LastTraceDestination.Time;
-		bUsePredictedAirTime = (PredictProjectilePathResult.HitResult.bBlockingHit && PredictProjectilePathResult.HitResult.ImpactNormal.Z >= OwnerPawn->GetCharacterMovement()->GetWalkableFloorZ()) || !PredictProjectilePathResult.HitResult.bBlockingHit;
-		InAirTime = 0.f;
 	}
 }
