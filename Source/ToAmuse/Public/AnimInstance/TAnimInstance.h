@@ -86,6 +86,21 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Animation")
 	void InAirTrace(float& OutPredictedInAirTime, bool& OutUsePredictedAirTime, float& OutInAirTime) const;
 
+	UFUNCTION(BlueprintCallable, Category = "Animation")
+	void PlayTurnInPlaceAnimation(float PlayRate, float BlendInTime, class UAnimSequence* TurnAnim, class UCurveFloat* TurnCurve);
+
+	UFUNCTION(BlueprintCallable, Category = "Animation")
+	void TurnInPlaceCheck(float DeltaSeconds);
+
+	UFUNCTION(BlueprintCallable, Category = "Animation")
+	void StartTurnInPlace();
+
+	UFUNCTION(BlueprintCallable, Category = "Animation")
+	void StopTurnInPlace();
+
+	UFUNCTION(BlueprintCallable, Category = "Animation")
+	void TurnInPlace(float DeltaSeconds);
+
 protected:
 	UPROPERTY()
 	class ATCharacter* OwnerPawn;
@@ -170,7 +185,7 @@ protected:
 	FRotator CharacterRotation;
 
 	UPROPERTY(BlueprintReadWrite, Category = Rotator)
-	uint32 bShouldRotateInPlace : 1;
+	FRotator PreviousCharacterRotation;
 	
 	UPROPERTY(BlueprintReadWrite, Category = Rotator)
 	float RotationOffset;
@@ -207,4 +222,59 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, Category = TemporaryValues)
 	struct FFallingAnimationParameters FallingAnimationParameters;
+
+protected:
+	UPROPERTY(BlueprintReadWrite, Category = Turn)
+	FName TurnInPlaceSlot;
+
+	UPROPERTY(BlueprintReadWrite, Category = Turn)
+	UCurveFloat* TurnInPlaceCurve;
+	
+	UPROPERTY(BlueprintReadWrite, Category = Turn)
+	uint32 bTurningInPlace : 1;
+
+	UPROPERTY(BlueprintReadWrite, Category = Turn)
+	float TurnInPlaceTime;
+
+	UPROPERTY(BlueprintReadWrite, Category = Turn)
+	float CurveValue;
+
+	UPROPERTY(BlueprintReadWrite, Category = Turn)
+	float PreviousCurveValue;
+
+	UPROPERTY(BlueprintReadWrite, Category = Turn)
+	float TurnInPlaceRate;
+
+	UPROPERTY(BlueprintReadWrite, Category = Turn)
+	float TurnInPlaceDelayCount;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turn)
+	float TurnMinAngle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turn)
+	float TurnAngleThreshold;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turn)
+	class UAnimSequence* Turn90LeftAnim;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turn)
+	class UAnimSequence* Turn90RightAnim;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turn)
+	class UAnimSequence* Turn180LeftAnim;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turn)
+	class UAnimSequence* Turn180RightAnim;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turn)
+	class UCurveFloat* Turn90LeftCurve;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turn)
+	class UCurveFloat* Turn90RightCurve;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turn)
+	class UCurveFloat* Turn180LeftCurve;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turn)
+	class UCurveFloat* Turn180RightCurve;
 };

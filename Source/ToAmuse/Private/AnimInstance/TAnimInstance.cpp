@@ -9,7 +9,9 @@
 UTAnimInstance::UTAnimInstance(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-
+	TurnInPlaceSlot = TEXT("TurnInPlaceSlot");
+	TurnMinAngle = 60.f;
+	TurnAngleThreshold = 130.f;
 }
 
 void UTAnimInstance::NativeInitializeAnimation()
@@ -35,6 +37,18 @@ void UTAnimInstance::UpdateMeshRotation(float DeltaSeconds)
 	}
 }
 
+void UTAnimInstance::SetCharacterRotation(const FRotator& TargetRotation, bool bInterpRotation, float InterpSpeed, float DeltaSeconds)
+{
+	if (bInterpRotation)
+	{
+		CharacterRotation = FMath::RInterpTo(CharacterRotation, TargetRotation, DeltaSeconds, InterpSpeed);
+	}
+	else
+	{
+		CharacterRotation = TargetRotation;
+	}
+}
+
 bool UTAnimInstance::WasWhetherRange(float Value, float MinRangeTrue, float MaxRangeTrue, float MinRangeFalse, float MaxRangeFlase, bool bWhether)
 {
 	return (Value >= (bWhether ? MinRangeTrue : MinRangeFalse)) && (Value <= (bWhether ? MaxRangeTrue : MaxRangeFlase));
@@ -51,6 +65,9 @@ void UTAnimInstance::InAirTrace(float& OutPredictedInAirTime, bool& OutUsePredic
 		PredictProjectilePathParams.ProjectileRadius = CapsuleComponent->GetScaledCapsuleRadius() - 5.f;
 		PredictProjectilePathParams.bTraceWithCollision = true;
 		PredictProjectilePathParams.bTraceWithChannel = true;
+		PredictProjectilePathParams.TraceChannel = ECollisionChannel::ECC_Visibility;
+		PredictProjectilePathParams.SimFrequency = 10.f;
+		PredictProjectilePathParams.MaxSimTime = 3.f;
 
 		FPredictProjectilePathResult PredictProjectilePathResult;
 
@@ -62,15 +79,86 @@ void UTAnimInstance::InAirTrace(float& OutPredictedInAirTime, bool& OutUsePredic
 	}
 }
 
-void UTAnimInstance::SetCharacterRotation(const FRotator& TargetRotation, bool bInterpRotation, float InterpSpeed, float DeltaSeconds)
+void UTAnimInstance::PlayTurnInPlaceAnimation(float PlayRate, float BlendInTime, class UAnimSequence* TurnAnim, class UCurveFloat* TurnCurve)
 {
-	if (bInterpRotation)
+	StartTurnInPlace();
+
+	TurnInPlaceCurve = TurnCurve;
+	TurnInPlaceTime = 0.f;
+	CurveValue = 0.f;
+	PreviousCurveValue = 0.f;
+	TurnInPlaceRate = PlayRate;
+	
+	PlaySlotAnimationAsDynamicMontage(TurnAnim, TurnInPlaceSlot, BlendInTime, 0.2f, TurnInPlaceRate, 1, 0.f, 0.f);
+}
+
+void UTAnimInstance::TurnInPlaceCheck(float DeltaSeconds)
+{
+	const float AbsOffset = FMath::Abs(RotationOffset);
+
+	if (AbsOffset > TurnMinAngle)
 	{
-		CharacterRotation = FMath::RInterpTo(CharacterRotation, TargetRotation, DeltaSeconds, InterpSpeed);
+		TurnInPlaceDelayCount += DeltaSeconds;
+
+		if (TurnInPlaceDelayCount > FMath::GetMappedRangeValueClamped(FVector2D(45.f, 160.f), FVector2D(0.5f, 0.1f), AbsOffset))
+		{
+			if (RotationOffset > 0.f)
+			{
+				if (AbsOffset > TurnAngleThreshold)
+				{
+					PlayTurnInPlaceAnimation(1.5f, 0.15f, Turn180LeftAnim, Turn180LeftCurve);
+				}
+				else
+				{
+					PlayTurnInPlaceAnimation(1.25f, 0.15f, Turn90LeftAnim, Turn90LeftCurve);
+				}
+			}
+			else
+			{
+				if (AbsOffset > TurnAngleThreshold)
+				{
+					PlayTurnInPlaceAnimation(1.5f, 0.15f, Turn180RightAnim, Turn180RightCurve);
+				}
+				else
+				{
+					PlayTurnInPlaceAnimation(1.25f, 0.15f, Turn90RightAnim, Turn90RightCurve);
+				}
+			}
+		}
 	}
 	else
 	{
-		CharacterRotation = TargetRotation;
+		TurnInPlaceDelayCount = 0.f;
+	}
+}
+
+void UTAnimInstance::StartTurnInPlace()
+{
+	bTurningInPlace = true;
+}
+
+void UTAnimInstance::StopTurnInPlace()
+{
+	bTurningInPlace = false;
+
+	StopSlotAnimation(0.2f, TurnInPlaceSlot);
+}
+
+void UTAnimInstance::TurnInPlace(float DeltaSeconds)
+{
+	TurnInPlaceTime += DeltaSeconds;
+
+	if (TurnInPlaceCurve != nullptr)
+	{
+		float CurrentCurveValue = TurnInPlaceCurve->GetFloatValue(TurnInPlaceTime * TurnInPlaceRate);
+
+		CurveValue = CurrentCurveValue - PreviousCurveValue;
+
+		PreviousCurveValue = CurrentCurveValue;
+
+		FRotator TargetCharaterRotaion = CharacterRotation + FRotator(0.f, CurveValue, 0.f);
+
+		SetCharacterRotation(TargetCharaterRotaion);
 	}
 }
 
@@ -94,19 +182,14 @@ void UTAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		MovementMode = AdvancedMovement->MovementMode;
 		PrevMovementMode = AdvancedMovement->PrevMovementMode;
+		JumpZVelocity = AdvancedMovement->JumpZVelocity;
 
 		if (MovementMode == EMovementMode::MOVE_Falling)
 		{
 			FallSpeed = Velocity.Z;
 			InAirTime += DeltaSeconds;
+			LeanInAir = FMath::GetMappedRangeValueClamped(FVector2D(JumpZVelocity, -JumpZVelocity), FVector2D(1.f, -1.f), FallSpeed) * (Speed / AdvancedMovement->MaxWalkSpeed);
 		}
-		else
-		{
-			FallSpeed = 0.f;
-			InAirTime = 0.f;
-		}
-
-		JumpZVelocity = AdvancedMovement->JumpZVelocity;
 
 		// 是否移动
 		bMoving = !FMath::IsNearlyZero(Speed, 1.0e-03f);
@@ -125,8 +208,10 @@ void UTAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	if (bMoving)
 	{
+		StopTurnInPlace();
+
 		float LastVelocityDeltaYaw = (ActorRotation - LastVelocityRotation).GetNormalized().Yaw;
-		
+
 		if (bSprinting)
 		{
 			CardinalDirection = ECardinalDirection::Forwards;
@@ -154,6 +239,15 @@ void UTAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 		Direction = (LastVelocityRotation - CharacterRotation).GetNormalized().Yaw;
 	}
+	else
+	{
+		RotationOffset = (CharacterRotation - ActorRotation).GetNormalized().Yaw;
+
+		if (!bTurningInPlace)
+		{
+			TurnInPlaceCheck(DeltaSeconds);
+		}
+	}
 
 	const FRotator& AimOffsetRotation = (BaseAimRotation - CharacterRotation).GetNormalized();
 	const float AimmOffsetInterpSpeed = FMath::GetMappedRangeValueClamped(FVector2D(0.f, 180.f), FVector2D(15.f, 5.f), AimOffsetRotation.Yaw - AimOffset.X);
@@ -167,7 +261,7 @@ void UTAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	PreviousVelocityRotation = LastVelocityRotation;
 
 	float TargetLeanRotation = FMath::GetMappedRangeValueClamped(FVector2D(-200.f, 200.f), FVector2D(-1.f, 1.f), FMath::Clamp(YawValue, -200.f, 200.f)) * FMath::GetMappedRangeValueClamped(FVector2D(165, 375.f), FVector2D(0.f, 1.f), Speed);
-	
+
 	float LeanSpeedRatio = FMath::GetMappedRangeValueClamped(FVector2D(165.f, 375.f), FVector2D(0, 1.f), Speed);
 
 	LeanRotation = FMath::FInterpTo(LeanRotation, TargetLeanRotation * LeanSpeedRatio, DeltaSeconds, 8.f);

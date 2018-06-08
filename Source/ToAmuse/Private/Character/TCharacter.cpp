@@ -12,7 +12,7 @@ ATCharacter::ATCharacter(const class FObjectInitializer& ObjectInitializer)
 {
 	GetMesh()->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::AlwaysTickPoseAndRefreshBones;
 
-	GetCapsuleComponent()->InitCapsuleSize(90.f, 30.f);
+	GetCapsuleComponent()->InitCapsuleSize(30.f, 90.f);
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	if (CameraBoom)
