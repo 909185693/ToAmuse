@@ -2,6 +2,7 @@
 	"BuildId": "3944462",
 	"Modules": 
 	{
+		"LoginServer": "UE4Editor-LoginServer.dll",
 		"ToAmuse": "UE4Editor-ToAmuse.dll"
 	}
 }

@@ -6063,6 +6063,18 @@
 			"IsPrecompiled": true
 		},
 		{
+			"Path": "$(ProjectDir)/Binaries/Win64/UE4Editor-LoginServer.dll",
+			"Type": "DynamicLibrary"
+		},
+		{
+			"Path": "$(ProjectDir)/Binaries/Win64/UE4Editor-LoginServer.pdb",
+			"Type": "SymbolFile"
+		},
+		{
+			"Path": "$(ProjectDir)/Intermediate/Build/Win64/UE4Editor/Development/UE4Editor-LoginServer.lib",
+			"Type": "ImportLibrary"
+		},
+		{
 			"Path": "$(EngineDir)/Binaries/Win64/UE4Editor.version",
 			"Type": "BuildResource"
 		},
