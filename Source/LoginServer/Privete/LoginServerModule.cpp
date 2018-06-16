@@ -20,4 +20,9 @@ bool FLoginServerModule::IsGameModule() const
 	return false;
 }
 
-IMPLEMENT_GAME_MODULE(FLoginServerModule, LoginServer);
+void FLoginServerModule::Create()
+{
+
+}
+
+IMPLEMENT_MODULE(FLoginServerModule, LoginServer);

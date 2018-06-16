@@ -1,0 +1,483 @@
+{
+	"TargetName": "ToAmuseServer",
+	"Platform": "Win64",
+	"Configuration": "Development",
+	"Version": 
+	{
+		"MajorVersion": 4,
+		"MinorVersion": 19,
+		"PatchVersion": 1,
+		"Changelist": 0,
+		"CompatibleChangelist": 3944462,
+		"IsLicenseeVersion": 0,
+		"IsPromotedBuild": 1,
+		"BranchName": "",
+		"BuildId": "e653d9ab-a3e7-42d5-abab-56fd88e2a638"
+	},
+	"BuildProducts": [
+		{
+			"Path": "$(ProjectDir)/Binaries/Win64/ToAmuseServer.exe",
+			"Type": "Executable"
+		},
+		{
+			"Path": "$(ProjectDir)/Binaries/Win64/ToAmuseServer.pdb",
+			"Type": "SymbolFile"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Online/OnlineFramework/Binaries/Win64/ToAmuseServer-Qos.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Online/OnlineFramework/Binaries/Win64/ToAmuseServer-Party.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Online/OnlineFramework/Binaries/Win64/ToAmuseServer-Lobby.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Online/OnlineFramework/Binaries/Win64/ToAmuseServer-Hotfix.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Online/OnlineFramework/Binaries/Win64/ToAmuseServer-Rejoin.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Online/OnlineFramework/Binaries/Win64/ToAmuseServer-LoginFlow.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Online/OnlineSubsystem/Binaries/Win64/ToAmuseServer-OnlineSubsystem.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Online/OnlineSubsystemUtils/Binaries/Win64/ToAmuseServer-OnlineSubsystemUtils.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/2D/Paper2D/Binaries/Win64/ToAmuseServer-Paper2D.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Blendables/LightPropagationVolume/Binaries/Win64/ToAmuseServer-LightPropagationVolumeRuntime.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Editor/FacialAnimation/Binaries/Win64/ToAmuseServer-FacialAnimation.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Enterprise/DatasmithContent/Binaries/Win64/ToAmuseServer-DatasmithContent.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Experimental/CharacterAI/Binaries/Win64/ToAmuseServer-CharacterAI.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Experimental/HTML5Networking/Binaries/Win64/ToAmuseServer-HTML5Networking.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Media/AvfMedia/Binaries/Win64/ToAmuseServer-AvfMediaFactory.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Media/ImgMedia/Binaries/Win64/ToAmuseServer-ImgMedia.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Media/ImgMedia/Binaries/Win64/ToAmuseServer-ImgMediaFactory.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Media/ImgMedia/Binaries/Win64/ToAmuseServer-OpenExrWrapper.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Media/LinearTimecode/Binaries/Win64/ToAmuseServer-LinearTimecode.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Media/MediaCompositing/Binaries/Win64/ToAmuseServer-MediaCompositing.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Media/WmfMedia/Binaries/Win64/ToAmuseServer-WmfMedia.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Media/WmfMedia/Binaries/Win64/ToAmuseServer-WmfMediaFactory.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Messaging/TcpMessaging/Binaries/Win64/ToAmuseServer-TcpMessaging.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Messaging/UdpMessaging/Binaries/Win64/ToAmuseServer-UdpMessaging.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/MovieScene/ActorSequence/Binaries/Win64/ToAmuseServer-ActorSequence.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Online/OnlineSubsystemNull/Binaries/Win64/ToAmuseServer-OnlineSubsystemNull.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/AndroidPermission/Binaries/Win64/ToAmuseServer-AndroidPermission.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/AppleARKit/Binaries/Win64/ToAmuseServer-AppleARKit.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/ProceduralMeshComponent/Binaries/Win64/ToAmuseServer-ProceduralMeshComponent.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Animation/LiveLink/Binaries/Win64/ToAmuseServer-LiveLink.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/ArchVisCharacter/Binaries/Win64/ToAmuseServer-ArchVisCharacter.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/AudioCapture/Binaries/Win64/ToAmuseServer-AudioCapture.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/CableComponent/Binaries/Win64/ToAmuseServer-CableComponent.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/CustomMeshComponent/Binaries/Win64/ToAmuseServer-CustomMeshComponent.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/ExampleDeviceProfileSelector/Binaries/Win64/ToAmuseServer-ExampleDeviceProfileSelector.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/ImmediatePhysics/Binaries/Win64/ToAmuseServer-ImmediatePhysics.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/LocationServicesBPLibrary/Binaries/Win64/ToAmuseServer-LocationServicesBPLibrary.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/MobilePatchingUtils/Binaries/Win64/ToAmuseServer-MobilePatchingUtils.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/Oculus/OculusVR/Binaries/Win64/ToAmuseServer-OculusHMD.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/Oculus/OculusVR/Binaries/Win64/ToAmuseServer-OculusInput.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/PhysXVehicles/Binaries/Win64/ToAmuseServer-PhysXVehicles.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/RuntimePhysXCooking/Binaries/Win64/ToAmuseServer-RuntimePhysXCooking.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/Steam/SteamVR/Binaries/Win64/ToAmuseServer-SteamVR.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/Steam/SteamVR/Binaries/Win64/ToAmuseServer-SteamVRController.lib",
+			"Type": "StaticLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/WindowsMoviePlayer/Binaries/Win64/ToAmuseServer-WindowsMoviePlayer.lib",
+			"Type": "StaticLibrary"
+		}
+	],
+	"RuntimeDependencies": [
+		{
+			"Path": "$(ProjectDir)/ToAmuse.uproject",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Online/OnlineFramework/OnlineFramework.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Online/OnlineSubsystem/OnlineSubsystem.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Online/OnlineSubsystemUtils/OnlineSubsystemUtils.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/2D/Paper2D/Paper2D.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Blendables/LightPropagationVolume/LightPropagationVolume.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Editor/CryptoKeys/CryptoKeys.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Editor/FacialAnimation/FacialAnimation.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Enterprise/DatasmithContent/DatasmithContent.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Experimental/CharacterAI/CharacterAI.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Experimental/HTML5Networking/HTML5Networking.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Media/AvfMedia/AvfMedia.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Media/ImgMedia/ImgMedia.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Media/LinearTimecode/LinearTimecode.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Media/MediaCompositing/MediaCompositing.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Media/WmfMedia/WmfMedia.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Messaging/TcpMessaging/TcpMessaging.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Messaging/UdpMessaging/UdpMessaging.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/MovieScene/ActorSequence/ActorSequence.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Online/OnlineSubsystemNull/OnlineSubsystemNull.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/AndroidPermission/AndroidPermission.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/AppleARKit/AppleARKit.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/ProceduralMeshComponent/ProceduralMeshComponent.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Animation/LiveLink/LiveLink.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/ArchVisCharacter/ArchVisCharacter.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/AudioCapture/AudioCapture.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/CableComponent/CableComponent.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/CustomMeshComponent/CustomMeshComponent.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/ExampleDeviceProfileSelector/ExampleDeviceProfileSelector.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/ImmediatePhysics/ImmediatePhysics.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/LocationServicesBPLibrary/LocationServicesBPLibrary.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/MobilePatchingUtils/MobilePatchingUtils.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/Oculus/OculusVR/OculusVR.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/PhysXVehicles/PhysXVehicles.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/RuntimePhysXCooking/RuntimePhysXCooking.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/Steam/SteamVR/SteamVR.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/WindowsMoviePlayer/WindowsMoviePlayer.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/Oculus/OVRPlugin/OVRPlugin/Win64/OVRPlugin.dll",
+			"Type": "NonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/Oculus/OVRPlugin/OVRPlugin/Win64/OVRPlugin.dll",
+			"Type": "NonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/PhysX3/Win64/VS2015/PxFoundationPROFILE_x64.dll",
+			"Type": "NonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/PhysX3/Win64/VS2015/PxFoundationPROFILE_x64.pdb",
+			"Type": "DebugNonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/PhysX3/Win64/VS2015/PxPvdSDKPROFILE_x64.dll",
+			"Type": "NonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/PhysX3/Win64/VS2015/PxPvdSDKPROFILE_x64.pdb",
+			"Type": "DebugNonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/PhysX3/Win64/VS2015/PhysX3PROFILE_x64.dll",
+			"Type": "NonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/PhysX3/Win64/VS2015/PhysX3PROFILE_x64.pdb",
+			"Type": "DebugNonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/PhysX3/Win64/VS2015/PhysX3CookingPROFILE_x64.dll",
+			"Type": "NonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/PhysX3/Win64/VS2015/PhysX3CookingPROFILE_x64.pdb",
+			"Type": "DebugNonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/PhysX3/Win64/VS2015/PhysX3CommonPROFILE_x64.dll",
+			"Type": "NonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/PhysX3/Win64/VS2015/PhysX3CommonPROFILE_x64.pdb",
+			"Type": "DebugNonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/PhysX3/Win64/VS2015/PxFoundationPROFILE_x64.dll",
+			"Type": "NonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/PhysX3/Win64/VS2015/PxPvdSDKPROFILE_x64.dll",
+			"Type": "NonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/PhysX3/Win64/VS2015/APEX_ClothingPROFILE_x64.dll",
+			"Type": "NonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/PhysX3/Win64/VS2015/APEX_ClothingPROFILE_x64.pdb",
+			"Type": "DebugNonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/PhysX3/Win64/VS2015/APEX_LegacyPROFILE_x64.dll",
+			"Type": "NonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/PhysX3/Win64/VS2015/APEX_LegacyPROFILE_x64.pdb",
+			"Type": "DebugNonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/PhysX3/Win64/VS2015/ApexFrameworkPROFILE_x64.dll",
+			"Type": "NonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/PhysX3/Win64/VS2015/ApexFrameworkPROFILE_x64.pdb",
+			"Type": "DebugNonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/PhysX3/Win64/VS2015/NvClothPROFILE_x64.dll",
+			"Type": "NonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/PhysX3/Win64/VS2015/NvClothPROFILE_x64.pdb",
+			"Type": "DebugNonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/Ogg/Win64/VS2015/libogg_64.dll",
+			"Type": "NonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/Vorbis/Win64/VS2015/libvorbis_64.dll",
+			"Type": "NonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/Vorbis/Win64/VS2015/libvorbisfile_64.dll",
+			"Type": "NonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/PhysX3/Win64/VS2015/PhysX3CookingPROFILE_x64.dll",
+			"Type": "NonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/PhysX3/Win64/VS2015/PhysX3CookingPROFILE_x64.pdb",
+			"Type": "DebugNonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/NVIDIA/NVaftermath/Win64/GFSDK_Aftermath_Lib.x64.dll",
+			"Type": "NonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/Windows/DirectX/x64/WinPixEventRuntime.dll",
+			"Type": "NonUFS"
+		},
+		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/OpenVR/OpenVRv1_0_10/Win64/openvr_api.dll",
+			"Type": "NonUFS"
+		}
+	],
+	"AdditionalProperties": [
+		{
+			"Name": "SDK",
+			"Value": "Not Applicable"
+		}
+	]
+}

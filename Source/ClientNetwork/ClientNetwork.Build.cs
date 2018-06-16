@@ -2,11 +2,11 @@
 
 using UnrealBuildTool;
 
-public class LoginServer : ModuleRules
+public class ClientNetwork : ModuleRules
 {
-    public LoginServer(ReadOnlyTargetRules Target) : base(Target)
+    public ClientNetwork(ReadOnlyTargetRules Target) : base(Target)
     {
-        PrivateIncludePaths.Add("LoginServer/Private");
+        PrivateIncludePaths.Add("ClientNetwork/Private");
         
         PrivateDependencyModuleNames.AddRange(
             new string[] {
@@ -15,8 +15,7 @@ public class LoginServer : ModuleRules
 				"Sockets",
                 "Networking",
                 "Http",
-                "Engine",
-                "ToAmuse"
+                "Engine"
 			}
         );
 

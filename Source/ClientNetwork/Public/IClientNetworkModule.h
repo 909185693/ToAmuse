@@ -4,9 +4,9 @@
 
 #include "ModuleInterface.h"
 
-class ILoginServerModule : public IModuleInterface
+class IClientNetworkModule : public IModuleInterface
 {
 
 protected:
-	ILoginServerModule() { }
+	IClientNetworkModule() { }
 };

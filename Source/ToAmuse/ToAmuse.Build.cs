@@ -15,8 +15,8 @@ public class ToAmuse : ModuleRules
             "Networking",
             "Engine",
             "InputCore",
-            "Sockets",
-            "LoginServer"
+            "LoginServer",
+            "ClientNetwork"
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {

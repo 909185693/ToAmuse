@@ -1,18 +1,17 @@
 // Copyright 2018 by NiHongjian. All Rights Reserved.
 
+#include "Engine.h"
+#include "IClientNetworkModule.h"
+
 #pragma once
 
-#include "Engine.h"
-#include "ILoginServerModule.h"
-
-
-DECLARE_LOG_CATEGORY_EXTERN(LogLoginServerModule, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogClientNetworkModule, Log, All);
 
 /**
 * Implements the LoginServer module.
 */
-class FLoginServerModule
-	: public ILoginServerModule
+class FClientNetworkModule
+	: public IClientNetworkModule
 {
 public:
 
@@ -21,7 +20,4 @@ public:
 	virtual void ShutdownModule() override;
 
 	virtual bool IsGameModule() const override;
-
-protected:
-	void Create();
 };
