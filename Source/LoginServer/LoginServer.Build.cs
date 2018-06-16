@@ -6,17 +6,15 @@ public class LoginServer : ModuleRules
 {
     public LoginServer(ReadOnlyTargetRules Target) : base(Target)
     {
-        PrivateIncludePaths.Add("LoginServer/Private");
-        
+        PrivateIncludePaths.Add("LoginServer/Privete");
+
         PrivateDependencyModuleNames.AddRange(
             new string[] {
 				"Core",
                 "CoreUObject",
-				"Sockets",
-                "Networking",
-                "Http",
                 "Engine",
-                "ToAmuse"
+                "Sockets",
+                "Networking",
 			}
         );
 

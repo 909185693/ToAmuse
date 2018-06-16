@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "LoginServer.h"
 #include "GameFramework/GameModeBase.h"
 #include "GameMode_Lobby.generated.h"
 
@@ -22,5 +22,6 @@ class TOAMUSE_API AGameMode_Lobby : public AGameModeBase
 	*/
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	
-	
+protected:
+	TSharedPtr<TAsynTcpServer> AsynTcpServer;
 };

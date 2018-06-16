@@ -1,5 +1,5 @@
-#include "LoginServerModule.h"
 #include "LoginServer.h"
+#include "LoginServerModule.h"
 #include "ModuleManager.h"
 
 

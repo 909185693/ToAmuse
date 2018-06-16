@@ -11,5 +11,11 @@ AGameMode_Lobby::AGameMode_Lobby(const class FObjectInitializer& ObjectInitializ
 
 void AGameMode_Lobby::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
-	Super::InitGame(MapName,  Options, ErrorMessage)
+	Super::InitGame(MapName, Options, ErrorMessage);
+
+	AsynTcpServer = MakeShareable(new TAsynTcpServer());
+	if (AsynTcpServer.IsValid())
+	{
+		AsynTcpServer->Create();
+	}
 }

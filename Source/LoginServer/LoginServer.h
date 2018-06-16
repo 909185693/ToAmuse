@@ -4,3 +4,6 @@
 
 #include "Sockets.h"
 #include "Networking.h"
+
+#include "AsynTcpServer.h"
+#include "ILoginServerModule.h"

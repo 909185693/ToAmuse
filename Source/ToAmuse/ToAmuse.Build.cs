@@ -14,13 +14,13 @@ public class ToAmuse : ModuleRules
             "UMG",
             "Networking",
             "Engine",
-            "InputCore",
-            "LoginServer",
-            "ClientNetwork"
+            "InputCore"
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {
-            "OnlineSubsystem"
+            "OnlineSubsystem",
+            "LoginServer",
+            "ClientNetwork"
         });
 
 		// Uncomment if you are using Slate UI
