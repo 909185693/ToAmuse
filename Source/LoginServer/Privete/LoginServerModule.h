@@ -21,7 +21,4 @@ public:
 	virtual void ShutdownModule() override;
 
 	virtual bool IsGameModule() const override;
-
-protected:
-	void Create();
 };

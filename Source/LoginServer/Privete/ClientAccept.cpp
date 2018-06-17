@@ -1,11 +1,12 @@
 // Copyright 2018 by NiHongjian. All Rights Reserved.
 
 #include "LoginServer.h"
+#include "LoginServerModule.h"
 #include "ClientAccept.h"
 
 
-FClientAccept::FClientAccept(FSocket* InSocket)
-	: Socket(InSocket)
+FClientAccept::FClientAccept(TAsynTcpServer* InAsynTcpServer)
+	: AsynTcpServer(InAsynTcpServer)
 {
 
 }
@@ -29,6 +30,7 @@ bool FClientAccept::Init()
 
 uint32 FClientAccept::Run()
 {
+	FSocket* Socket = AsynTcpServer ? AsynTcpServer->Socket : nullptr;
 	if (!Socket)
 	{
 		return 0;
@@ -36,7 +38,15 @@ uint32 FClientAccept::Run()
 
 	while (!bStopping)
 	{
-//		UE_LOG(LogLoginServerModule, Warning, TEXT("FClientAccept::Run()!"));
+		FSocket* AcceptSocket = Socket->Accept(AsynTcpServer->Description);
+		if (AcceptSocket != nullptr)
+		{
+			FScopeLock* QueueLock = new FScopeLock(&AsynTcpServer->ClientsCritical);
+			AsynTcpServer->Clients.Add(AcceptSocket);
+			delete QueueLock;
+
+			UE_LOG(LogLoginServerModule, Warning, TEXT("FClientAccept::Run()!"));
+		}
 	}
 
 	return 0;

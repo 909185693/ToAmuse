@@ -15,6 +15,7 @@ public class LoginServer : ModuleRules
                 "Engine",
                 "Sockets",
                 "Networking",
+                "ToAmuse"
 			}
         );
 
@@ -23,5 +24,11 @@ public class LoginServer : ModuleRules
                 "Networking"
 			}
         );
-	}
+
+        PublicIncludePaths.AddRange(
+            new string[] {
+                "Common"
+            }
+        );
+    }
 }

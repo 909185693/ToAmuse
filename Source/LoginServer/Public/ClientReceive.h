@@ -2,18 +2,14 @@
 
 #pragma once
 
-#include "Sockets.h"
-#include "Networking.h"
+#include "AsynTcpServer.h"
 
 
 class FClientReceive : public FRunnable
 {
 public:
-	FClientReceive(FSocket* InSocket);
+	FClientReceive(TAsynTcpServer* InAsynTcpServer);
 	~FClientReceive();
-
-public:
-	virtual void Receive();
 
 public:
 
@@ -25,5 +21,5 @@ public:
 private:
 	bool bStopping;
 
-	FSocket* Socket;
+	TAsynTcpServer* AsynTcpServer;
 };

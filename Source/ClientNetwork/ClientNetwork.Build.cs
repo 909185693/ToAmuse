@@ -24,5 +24,11 @@ public class ClientNetwork : ModuleRules
                 "Networking"
 			}
         );
-	}
+
+        PublicIncludePaths.AddRange(
+            new string[] {
+                "Common"
+            }
+        );
+    }
 }

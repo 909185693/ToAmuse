@@ -1,21 +1,17 @@
 // Copyright 2018 by NiHongjian. All Rights Reserved.
 
 #include "LoginServer.h"
+#include "LoginServerModule.h"
 #include "ClientSend.h"
 
 
-FClientSend::FClientSend(FSocket* InSocket)
-	: Socket(InSocket)
+FClientSend::FClientSend(TAsynTcpServer* InAsynTcpServer)
+	: AsynTcpServer(InAsynTcpServer)
 {
 
 }
 
 FClientSend::~FClientSend()
-{
-
-}
-
-void FClientSend::Send()
 {
 
 }
@@ -29,14 +25,39 @@ bool FClientSend::Init()
 
 uint32 FClientSend::Run()
 {
-	if (!Socket)
+	if (!AsynTcpServer)
 	{
 		return 0;
 	}
 
 	while (!bStopping)
 	{
-//		UE_LOG(LogLoginServerModule, Warning, TEXT("FClientSend::Run()!"));
+		FScopeLock* SendQueueLock = new FScopeLock(&AsynTcpServer->SendCritical);
+		if (!AsynTcpServer->SendMessages.IsEmpty())
+		{
+			TSharedPtr<FClientMessage> Message;
+			AsynTcpServer->SendMessages.Dequeue(Message);
+
+			if (Message.IsValid())
+			{
+				if (FSocket* Socket = Message->Socket)
+				{
+					int32 Sent = 0;
+
+					if (Socket->Send(Message->Data.Data, Message->Data.Size, Sent))
+					{
+						UE_LOG(LogLoginServerModule, Warning, TEXT("FClientSend::Run() Success!"));
+					}
+					else
+					{
+						UE_LOG(LogLoginServerModule, Warning, TEXT("FClientSend::Run() Failed!"));
+					}
+				}
+
+				Message.Reset();
+			}
+		}
+		delete SendQueueLock;
 	}
 
 	return 0;

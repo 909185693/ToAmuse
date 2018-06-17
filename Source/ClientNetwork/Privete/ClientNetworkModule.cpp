@@ -1,5 +1,5 @@
-#include "ClientNetworkModule.h"
 #include "ClientNetwork.h"
+#include "ClientNetworkModule.h"
 #include "ModuleManager.h"
 
 

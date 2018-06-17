@@ -22,6 +22,10 @@ class TOAMUSE_API AGameMode_Lobby : public AGameModeBase
 	*/
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	
+	virtual void Destroyed() override;
+
+	virtual void Tick(float DeltaSeconds) override;
+
 protected:
 	TSharedPtr<TAsynTcpServer> AsynTcpServer;
 };
