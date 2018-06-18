@@ -18,6 +18,10 @@ public:
 
 	void Send(const void* Data, int32 DataSize);
 
+	void Read(TSharedPtr<FBase>& Data);
+
+	static TSharedPtr<TAsynTcpClient> Get();
+
 	FSocket* Socket;
 
 	static FString Description;
@@ -31,9 +35,13 @@ public:
 
 	// »¥³âËø
 	FCriticalSection SocketCritical;
-	FCriticalSection MessagesCritical;
+	FCriticalSection SendCritical;
+	FCriticalSection ReceiveCritical;
 	
 protected:
 	FRunnableThread* ReceiveThread;
 	FRunnableThread* SendThread;
+
+private:
+	static TSharedPtr<TAsynTcpClient> Instance;
 };

@@ -5,21 +5,21 @@
 #include "AsynTcpServer.h"
 
 
-class FClientAccept : public FRunnable
+class FLogicProcess : public FRunnable
 {
 public:
-	FClientAccept(TSharedPtr<TAsynTcpServer> InAsynTcpServer);
-	~FClientAccept();
+	FLogicProcess(TSharedPtr<TAsynTcpServer> InAsynTcpServer);
+	~FLogicProcess();
 
 public:
-	virtual void Accept();
-
-public:
-
 	virtual bool Init() override;
 	virtual uint32 Run() override;
 	virtual void Stop() override;
 	virtual void Exit() override;
+
+protected:
+	void Process(FSocket* Socket, const TSharedPtr<FBase>& Data);
+	void OnLogin(FSocket* Socket, FLoginInfo LoginInfo);
 
 private:
 	bool bStopping;

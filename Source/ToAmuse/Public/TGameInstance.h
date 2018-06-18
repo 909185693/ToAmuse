@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "ClientNetwork.h"
 #include "Engine/GameInstance.h"
 #include "TGameInstance.generated.h"
 
@@ -21,6 +20,13 @@ class TOAMUSE_API UTGameInstance : public UGameInstance
 
 	virtual bool Tick(float DeltaSeconds);
 
+public:
+	UPROPERTY(Config)
+	FString ServerIP;
+
+	UPROPERTY(Config)
+	int32 ServerPort;
+
 protected:
 	/** Delegate for callbacks to Tick */
 	FTickerDelegate TickDelegate;
@@ -28,11 +34,6 @@ protected:
 	/** Handle to various registered delegates */
 	FDelegateHandle TickDelegateHandle;
 
-	UPROPERTY(Config)
-	FString ServerIP;
-
-	UPROPERTY(Config)
-	int32 ServerPort;
-
-	TSharedPtr<TAsynTcpClient> AsynTcpClient;
+protected:
+	void NetworkProcess();
 };

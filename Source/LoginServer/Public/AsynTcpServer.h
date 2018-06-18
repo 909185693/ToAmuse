@@ -6,14 +6,14 @@
 #include "Networking.h"
 #include "Structure.h"
 
-struct FClientMessage
+struct FSendMessage
 {
-	FClientMessage()
+	FSendMessage()
 	{
 
 	}
 
-	FClientMessage(FSocket* InSocket, const FDatagram& InData)
+	FSendMessage(FSocket* InSocket, const FDatagram& InData)
 		: Socket(InSocket)
 		, Data(InData)
 	{
@@ -25,6 +25,25 @@ struct FClientMessage
 	FDatagram Data;
 };
 
+struct FReceiveMessage
+{
+	FReceiveMessage(FSocket* InSocket, TSharedPtr<FBase> InData)
+		: Socket(InSocket)
+		, Data(InData)
+	{
+
+	}
+
+	~FReceiveMessage()
+	{
+		Data.Reset();
+	}
+
+	FSocket* Socket;
+
+	TSharedPtr<FBase> Data;
+};
+
 class LOGINSERVER_API TAsynTcpServer
 {
 public:
@@ -34,9 +53,11 @@ public:
 public:
 	FSocket* Create();
 
-	void SendClient(FSocket* ClientSocket, const void* InData, int32 InSize);
+	void SendClient(FSocket* ClientSocket, void* InData, int32 InSize);
 
-	void Read(TSharedPtr<FBase>& Data);
+	void Read(TSharedPtr<FReceiveMessage>& Data);
+
+	static TSharedPtr<TAsynTcpServer> Get();
 
 	FSocket* Socket;
 
@@ -46,8 +67,8 @@ public:
 	TArray<FSocket*> Clients;
 
 	// 消息队列
-	TQueue<TSharedPtr<FClientMessage>> SendMessages;
-	TQueue<TSharedPtr<FBase>> ReceiveMessages;
+	TQueue<TSharedPtr<FSendMessage>> SendMessages;
+	TQueue<TSharedPtr<FReceiveMessage>> ReceiveMessages;
 
 	// 互斥锁
 	FCriticalSection ClientsCritical;
@@ -58,4 +79,8 @@ protected:
 	FRunnableThread* AcceptThread;
 	FRunnableThread* ReceiveThread;
 	FRunnableThread* SendThread;
+	FRunnableThread* LogicThread;
+
+private:
+	static TSharedPtr<TAsynTcpServer> Instance;
 };

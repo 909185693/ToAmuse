@@ -5,7 +5,7 @@
 #include "ClientSend.h"
 
 
-FClientSend::FClientSend(TAsynTcpServer* InAsynTcpServer)
+FClientSend::FClientSend(TSharedPtr<TAsynTcpServer> InAsynTcpServer)
 	: AsynTcpServer(InAsynTcpServer)
 {
 
@@ -13,7 +13,7 @@ FClientSend::FClientSend(TAsynTcpServer* InAsynTcpServer)
 
 FClientSend::~FClientSend()
 {
-
+	AsynTcpServer.Reset();
 }
 
 bool FClientSend::Init()
@@ -25,7 +25,7 @@ bool FClientSend::Init()
 
 uint32 FClientSend::Run()
 {
-	if (!AsynTcpServer)
+	if (!AsynTcpServer.IsValid())
 	{
 		return 0;
 	}
@@ -35,7 +35,7 @@ uint32 FClientSend::Run()
 		FScopeLock* SendQueueLock = new FScopeLock(&AsynTcpServer->SendCritical);
 		if (!AsynTcpServer->SendMessages.IsEmpty())
 		{
-			TSharedPtr<FClientMessage> Message;
+			TSharedPtr<FSendMessage> Message;
 			AsynTcpServer->SendMessages.Dequeue(Message);
 
 			if (Message.IsValid())
@@ -46,7 +46,7 @@ uint32 FClientSend::Run()
 
 					if (Socket->Send(Message->Data.Data, Message->Data.Size, Sent))
 					{
-						UE_LOG(LogLoginServerModule, Warning, TEXT("FClientSend::Run() Success!"));
+						UE_LOG(LogLoginServerModule, Warning, TEXT("FClientSend::Run() Success! Code[%d] Size[%d]"), ((FBase*)Message->Data.Data)->Code, Message->Data.Size);
 					}
 					else
 					{

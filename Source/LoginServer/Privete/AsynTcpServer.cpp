@@ -6,6 +6,7 @@
 #include "ClientAccept.h"
 #include "ClientReceive.h"
 #include "ClientSend.h"
+#include "LogicProcess.h"
 
 
 FString TAsynTcpServer::Description = TEXT("AsynTcpServer");
@@ -25,6 +26,16 @@ TAsynTcpServer::~TAsynTcpServer()
 	}
 }
 
+TSharedPtr<TAsynTcpServer> TAsynTcpServer::Get()
+{
+	if (!Instance.IsValid())
+	{
+		Instance = MakeShareable(new TAsynTcpServer());
+	}
+
+	return Instance;
+}
+
 FSocket* TAsynTcpServer::Create()
 {
 	if (Socket == nullptr)
@@ -36,9 +47,10 @@ FSocket* TAsynTcpServer::Create()
 		
 		if (Socket != nullptr)
 		{
-			AcceptThread = FRunnableThread::Create(new FClientAccept(this), TEXT("ClientAccept"));
-			ReceiveThread = FRunnableThread::Create(new FClientReceive(this), TEXT("ClientReceive"));
-			SendThread = FRunnableThread::Create(new FClientSend(this), TEXT("ClientSend"));
+			AcceptThread = FRunnableThread::Create(new FClientAccept(Get()), TEXT("ClientAccept"));
+			ReceiveThread = FRunnableThread::Create(new FClientReceive(Get()), TEXT("ClientReceive"));
+			SendThread = FRunnableThread::Create(new FClientSend(Get()), TEXT("ClientSend"));
+			LogicThread = FRunnableThread::Create(new FLogicProcess(Get()), TEXT("LogicProcess"));
 
 			UE_LOG(LogLoginServerModule, Warning, TEXT("Login server start the success!"));
 		}
@@ -51,14 +63,14 @@ FSocket* TAsynTcpServer::Create()
 	return Socket;
 }
 
-void TAsynTcpServer::SendClient(FSocket* ClientSocket, const void* InData, int32 InSize)
+void TAsynTcpServer::SendClient(FSocket* ClientSocket, void* InData, int32 InSize)
 {
 	FScopeLock* SendQueueLock = new FScopeLock(&SendCritical);
-	SendMessages.Enqueue(MakeShareable(new FClientMessage(ClientSocket, FDatagram((uint8*)InData, InSize))));
+	SendMessages.Enqueue(MakeShareable(new FSendMessage(ClientSocket, FDatagram((uint8*)InData, InSize))));
 	delete SendQueueLock;
 }
 
-void TAsynTcpServer::Read(TSharedPtr<FBase>& Data)
+void TAsynTcpServer::Read(TSharedPtr<FReceiveMessage>& Data)
 {
 	FScopeLock* ReceiveQueueLock = new FScopeLock(&ReceiveCritical);
 	if (!ReceiveMessages.IsEmpty())
@@ -67,3 +79,5 @@ void TAsynTcpServer::Read(TSharedPtr<FBase>& Data)
 	}
 	delete ReceiveQueueLock;
 }
+
+TSharedPtr<TAsynTcpServer> TAsynTcpServer::Instance = nullptr;

@@ -5,7 +5,7 @@
 #include "ServerSend.h"
 
 
-FServerSend::FServerSend(TAsynTcpClient* InAsynTcpClient)
+FServerSend::FServerSend(TSharedPtr<TAsynTcpClient> InAsynTcpClient)
 	: AsynTcpClient(InAsynTcpClient)
 {
 
@@ -13,7 +13,7 @@ FServerSend::FServerSend(TAsynTcpClient* InAsynTcpClient)
 
 FServerSend::~FServerSend()
 {
-
+	AsynTcpClient.Reset();
 }
 
 bool FServerSend::Init()
@@ -25,14 +25,14 @@ bool FServerSend::Init()
 
 uint32 FServerSend::Run()
 {
-	if (!AsynTcpClient)
+	if (!AsynTcpClient.IsValid())
 	{
 		return 0;
 	}
 
 	while (!bStopping)
 	{
-		FScopeLock* QueueLock = new FScopeLock(&AsynTcpClient->MessagesCritical);
+		FScopeLock* QueueLock = new FScopeLock(&AsynTcpClient->SendCritical);
 		if (!AsynTcpClient->SendMessages.IsEmpty())
 		{
 			TSharedPtr<FDatagram> Datagram;

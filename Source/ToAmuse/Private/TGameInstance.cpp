@@ -1,7 +1,10 @@
 // Copyright 2018 by NiHongjian. All Rights Reserved.
 
 #include "TGameInstance.h"
+#include "ClientNetwork.h"
 #include "Structure.h"
+#include "NetworkFunctionLibrary.h"
+
 
 UTGameInstance::UTGameInstance(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -15,7 +18,7 @@ void UTGameInstance::Init()
 
 	if (!GetWorld()->IsNetMode(NM_DedicatedServer))
 	{
-		AsynTcpClient = MakeShareable(new TAsynTcpClient());
+		TSharedPtr<TAsynTcpClient> AsynTcpClient = TAsynTcpClient::Get();		
 		if (AsynTcpClient.IsValid())
 		{
 			AsynTcpClient->Connect(ServerIP, ServerPort);
@@ -37,17 +40,26 @@ void UTGameInstance::Shutdown()
 
 bool UTGameInstance::Tick(float DeltaSeconds)
 {
-	if (AsynTcpClient.IsValid())
-	{
-		FLoginInfo LoginInfo;
-		LoginInfo.Code = 1000;
-		LoginInfo.Error = 3000;
-		strcpy_s(LoginInfo.Message, "µÇÂ¼³É¹¦");
-		strcpy_s(LoginInfo.UserName, "909185693");
-		strcpy_s(LoginInfo.Password, "cc1234");
-
-		AsynTcpClient->Send(&LoginInfo, sizeof(FLoginInfo));
-	}
+	NetworkProcess();
 
 	return true;
+}
+
+void UTGameInstance::NetworkProcess()
+{
+	TSharedPtr<FBase> Data;
+	TAsynTcpClient::Get()->Read(Data);
+	if (Data.IsValid())
+	{
+		switch (Data->Code)
+		{
+		case USER_LOGIN:
+			UNetworkFunctionLibrary::Get(this)->OnLogin.Broadcast(Data->Error);
+			break;
+		default:
+			break;
+		}
+
+		UE_LOG(LogTemp, Warning, TEXT("Code[%d] Error[%d]"), Data->Code, Data->Error);
+	}
 }

@@ -6,15 +6,15 @@
 #include "Structure.h"
 
 
-FClientReceive::FClientReceive(TAsynTcpServer* InAsynTcpServer)
+FClientReceive::FClientReceive(TSharedPtr<TAsynTcpServer> InAsynTcpServer)
 	: AsynTcpServer(InAsynTcpServer)
 {
-	bStopping = false;
+
 }
 
 FClientReceive::~FClientReceive()
 {
-
+	AsynTcpServer.Reset();
 }
 
 bool FClientReceive::Init()
@@ -26,7 +26,7 @@ bool FClientReceive::Init()
 
 uint32 FClientReceive::Run()
 {
-	if (!AsynTcpServer)
+	if (!AsynTcpServer.IsValid())
 	{
 		return 0;
 	}
@@ -50,10 +50,10 @@ uint32 FClientReceive::Run()
 					int32 Read = 0;
 					if (Socket->Recv(ReceiveData.GetData(), ReceiveData.Num(), Read) && ReceiveData.Num() > 0)
 					{
-						TSharedPtr<FBase> ReceiveBase = MakeShareable((FBase*)ReceiveData.GetData());
-
+						TSharedPtr<FReceiveMessage> ReceiveMessage = MakeShareable(new FReceiveMessage(Socket, MakeShareable((FBase*)ReceiveData.GetData())));
+						
 						FScopeLock* ReceiveQueueLock = new FScopeLock(&AsynTcpServer->ReceiveCritical);
-						AsynTcpServer->ReceiveMessages.Enqueue(ReceiveBase);
+						AsynTcpServer->ReceiveMessages.Enqueue(ReceiveMessage);
 						delete ReceiveQueueLock;
 					}
 				}

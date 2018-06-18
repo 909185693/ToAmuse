@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include "LoginServer.h"
 #include "GameFramework/GameModeBase.h"
 #include "GameMode_Lobby.generated.h"
+
 
 /**
  * ´óÌüÄ£Ê½
@@ -25,7 +25,4 @@ class TOAMUSE_API AGameMode_Lobby : public AGameModeBase
 	virtual void Destroyed() override;
 
 	virtual void Tick(float DeltaSeconds) override;
-
-protected:
-	TSharedPtr<TAsynTcpServer> AsynTcpServer;
 };

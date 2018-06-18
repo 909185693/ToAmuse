@@ -8,7 +8,7 @@
 class FClientReceive : public FRunnable
 {
 public:
-	FClientReceive(TAsynTcpServer* InAsynTcpServer);
+	FClientReceive(TSharedPtr<TAsynTcpServer> InAsynTcpServer);
 	~FClientReceive();
 
 public:
@@ -21,5 +21,5 @@ public:
 private:
 	bool bStopping;
 
-	TAsynTcpServer* AsynTcpServer;
+	TSharedPtr<TAsynTcpServer> AsynTcpServer;
 };

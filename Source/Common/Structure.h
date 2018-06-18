@@ -3,8 +3,31 @@
 #pragma once
 
 #include "Engine.h"
+#include "Macro.h"
+
 
 #pragma pack(push, 1)
+struct FBase
+{
+	FBase()
+		: Code(0)
+		, Error(0)
+	{
+
+	}
+
+	FBase(int32 InCode, int32 InError)
+		: Code(InCode)
+		, Error(InError)
+	{
+
+	}
+
+	int32 Code;
+
+	int32 Error;
+};
+
 struct FDatagram
 {
 	FDatagram()
@@ -20,11 +43,15 @@ struct FDatagram
 		FMemory::Memcpy(Data, InData, InSize);
 
 		Size = InSize;
+
+		UE_LOG(LogTemp, Warning, TEXT("FDatagram::FDatagram() InData[%d] Data[%d]"), ((FBase*)InData)->Code, ((FBase*)Data)->Code);
 	}
 
 	~FDatagram()
 	{
-		delete[] Data;
+		//delete[] Data;
+
+		UE_LOG(LogTemp, Warning, TEXT("FDatagram::~FDatagram()"));
 	}
 
 	uint8* Data;
@@ -32,34 +59,11 @@ struct FDatagram
 	int32 Size;
 };
 
-struct FBase
-{
-	FBase()
-		: Code(0)
-		, Error(0)
-	{
-
-	}
-
-	FBase(uint16 InCode, uint16 InError)
-		: Code(InCode)
-		, Error(InError)
-	{
-
-	}
-
-	uint16 Code;
-
-	uint16 Error;
-
-	char Message[32];
-};
-
 struct FLoginInfo : public FBase
 {
-	char UserName[64];
+	TCHAR UserName[64];
 
-	char Password[64];
+	TCHAR Password[64];
 };
 
 #pragma pack(pop)

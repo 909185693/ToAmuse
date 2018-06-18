@@ -8,7 +8,7 @@
 class FServerSend : public FRunnable
 {
 public:
-	FServerSend(TAsynTcpClient* InAsynTcpClient);
+	FServerSend(TSharedPtr<TAsynTcpClient> InAsynTcpClient);
 	~FServerSend();
 
 public:
@@ -21,5 +21,5 @@ public:
 private:
 	bool bStopping;
 
-	TAsynTcpClient* AsynTcpClient;
+	TSharedPtr<TAsynTcpClient> AsynTcpClient;
 };

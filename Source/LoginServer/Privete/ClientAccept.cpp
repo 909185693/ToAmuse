@@ -5,7 +5,7 @@
 #include "ClientAccept.h"
 
 
-FClientAccept::FClientAccept(TAsynTcpServer* InAsynTcpServer)
+FClientAccept::FClientAccept(TSharedPtr<TAsynTcpServer> InAsynTcpServer)
 	: AsynTcpServer(InAsynTcpServer)
 {
 
@@ -13,7 +13,7 @@ FClientAccept::FClientAccept(TAsynTcpServer* InAsynTcpServer)
 
 FClientAccept::~FClientAccept()
 {
-
+	AsynTcpServer.Reset();
 }
 
 void FClientAccept::Accept()
@@ -30,7 +30,7 @@ bool FClientAccept::Init()
 
 uint32 FClientAccept::Run()
 {
-	FSocket* Socket = AsynTcpServer ? AsynTcpServer->Socket : nullptr;
+	FSocket* Socket = AsynTcpServer.IsValid() ? AsynTcpServer->Socket : nullptr;
 	if (!Socket)
 	{
 		return 0;
