@@ -43,14 +43,17 @@ uint32 FClientSend::Run()
 				if (FSocket* Socket = Message->Socket)
 				{
 					int32 Sent = 0;
-
-					if (Socket->Send(Message->Data.Data, Message->Data.Size, Sent))
+					TSharedPtr<FDatagram>& Datagram = Message->Data;
+					if (Datagram.IsValid())
 					{
-						UE_LOG(LogLoginServerModule, Warning, TEXT("FClientSend::Run() Success! Code[%d] Size[%d]"), ((FBase*)Message->Data.Data)->Code, Message->Data.Size);
-					}
-					else
-					{
-						UE_LOG(LogLoginServerModule, Warning, TEXT("FClientSend::Run() Failed!"));
+						if (Socket->Send(Datagram->Data, Datagram->Size, Sent))
+						{
+							UE_LOG(LogLoginServerModule, Warning, TEXT("FClientSend::Run() Send success! Code[%d] Error[%d] Size[%d]"), ((FBase*)Datagram->Data)->Code, ((FBase*)Datagram->Data)->Error, Datagram->Size);
+						}
+						else
+						{
+							UE_LOG(LogLoginServerModule, Warning, TEXT("FClientSend::Run() Send failed!"));
+						}
 					}
 				}
 

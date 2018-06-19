@@ -38,11 +38,14 @@ uint32 FClientReceive::Run()
 	while (!bStopping)
 	{
 		FScopeLock* ClientSocketLock = new FScopeLock(&AsynTcpServer->ClientsCritical);
-		for (FSocket* Socket : AsynTcpServer->Clients)
+		TArray<FSocket*>::TIterator It(AsynTcpServer->Clients);
+		for (;It;++It)
 		{
+			FSocket* Socket = *It;
 			if (Socket != nullptr)
 			{
 				uint32 Size = 0;
+				
 				while (Socket->HasPendingData(Size))
 				{
 					ReceiveData.Init(Element, FMath::Min(Size, 65507u));
@@ -50,7 +53,8 @@ uint32 FClientReceive::Run()
 					int32 Read = 0;
 					if (Socket->Recv(ReceiveData.GetData(), ReceiveData.Num(), Read) && ReceiveData.Num() > 0)
 					{
-						TSharedPtr<FReceiveMessage> ReceiveMessage = MakeShareable(new FReceiveMessage(Socket, MakeShareable((FBase*)ReceiveData.GetData())));
+						TSharedPtr<FBase> Data = MakeShareable((FBase*)ReceiveData.GetData());
+						TSharedPtr<FReceiveMessage> ReceiveMessage = MakeShareable(new FReceiveMessage(Socket, Data));
 						
 						FScopeLock* ReceiveQueueLock = new FScopeLock(&AsynTcpServer->ReceiveCritical);
 						AsynTcpServer->ReceiveMessages.Enqueue(ReceiveMessage);

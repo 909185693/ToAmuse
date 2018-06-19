@@ -16,6 +16,13 @@ struct FBase
 
 	}
 
+	FBase(int32 InError)
+		: Code(0)
+		, Error(InError)
+	{
+
+	}
+
 	FBase(int32 InCode, int32 InError)
 		: Code(InCode)
 		, Error(InError)
@@ -43,15 +50,11 @@ struct FDatagram
 		FMemory::Memcpy(Data, InData, InSize);
 
 		Size = InSize;
-
-		UE_LOG(LogTemp, Warning, TEXT("FDatagram::FDatagram() InData[%d] Data[%d]"), ((FBase*)InData)->Code, ((FBase*)Data)->Code);
 	}
 
 	~FDatagram()
 	{
-		//delete[] Data;
-
-		UE_LOG(LogTemp, Warning, TEXT("FDatagram::~FDatagram()"));
+		delete[] Data;
 	}
 
 	uint8* Data;

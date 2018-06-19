@@ -66,7 +66,9 @@ FSocket* TAsynTcpServer::Create()
 void TAsynTcpServer::SendClient(FSocket* ClientSocket, void* InData, int32 InSize)
 {
 	FScopeLock* SendQueueLock = new FScopeLock(&SendCritical);
-	SendMessages.Enqueue(MakeShareable(new FSendMessage(ClientSocket, FDatagram((uint8*)InData, InSize))));
+	TSharedPtr<FDatagram> Datagram = MakeShareable(new FDatagram((uint8*)InData, InSize));
+	TSharedPtr<FSendMessage> SendMessage = MakeShareable(new FSendMessage(ClientSocket, Datagram));
+	SendMessages.Enqueue(SendMessage);
 	delete SendQueueLock;
 }
 

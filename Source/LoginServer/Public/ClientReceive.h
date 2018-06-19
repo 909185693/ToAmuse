@@ -20,6 +20,6 @@ public:
 
 private:
 	bool bStopping;
-
+	
 	TSharedPtr<TAsynTcpServer> AsynTcpServer;
 };

@@ -30,8 +30,15 @@ uint32 FServerSend::Run()
 		return 0;
 	}
 
+	const FTimespan WaitTime(200);
+
 	while (!bStopping)
 	{
+		if (!AsynTcpClient->IsConnected())
+		{
+			continue;
+		}
+
 		FScopeLock* QueueLock = new FScopeLock(&AsynTcpClient->SendCritical);
 		if (!AsynTcpClient->SendMessages.IsEmpty())
 		{

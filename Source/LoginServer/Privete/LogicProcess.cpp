@@ -73,25 +73,15 @@ void FLogicProcess::Process(FSocket* Socket, const TSharedPtr<FBase>& Data)
 			break;
 		}
 	}
-
-	UE_LOG(LogLoginServerModule, Warning, TEXT("FLogicProcess::Process() Code[%d]"), Data->Code);
 }
 
 void FLogicProcess::OnLogin(FSocket* Socket, FLoginInfo LoginInfo)
 {
 	FBase Reply(USER_LOGIN, ERROR_LOGIN_FAILED);
-	if (FCString::Strlen(LoginInfo.Password) >= 6 && FCString::Strlen(LoginInfo.Password) > 6)
+	if (FString(TEXT("123456")).Equals(LoginInfo.Password) && FString(TEXT("123456")).Equals(LoginInfo.Password))
 	{
 		Reply.Error = ERROR_NONE;
-
-		//uint32 ProcessId = FPlatformProcess::GetCurrentProcessId();
-		//FString ApplicationName = FPlatformProcess::GetApplicationName(ProcessId);
-
-		//UE_LOG(LogLoginServerModule, Warning, TEXT("ApplicationName [%s]"), *ApplicationName);
-
-		//FPlatformProcess::CreateProc(TEXT(""))
 	}
 
 	TAsynTcpServer::Get()->SendClient(Socket, &Reply, sizeof(FBase));
-
 }

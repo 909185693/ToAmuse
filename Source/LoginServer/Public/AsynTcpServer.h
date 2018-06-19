@@ -13,21 +13,26 @@ struct FSendMessage
 
 	}
 
-	FSendMessage(FSocket* InSocket, const FDatagram& InData)
+	FSendMessage(FSocket* InSocket, TSharedPtr<FDatagram>& InData)
 		: Socket(InSocket)
 		, Data(InData)
 	{
 
 	}
 
+	~FSendMessage()
+	{
+		Data.Reset();
+	}
+
 	FSocket* Socket;
 
-	FDatagram Data;
+	TSharedPtr<FDatagram> Data;
 };
 
 struct FReceiveMessage
 {
-	FReceiveMessage(FSocket* InSocket, TSharedPtr<FBase> InData)
+	FReceiveMessage(FSocket* InSocket, TSharedPtr<FBase>& InData)
 		: Socket(InSocket)
 		, Data(InData)
 	{

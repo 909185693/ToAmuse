@@ -51,6 +51,18 @@ void UTGameInstance::NetworkProcess()
 	TAsynTcpClient::Get()->Read(Data);
 	if (Data.IsValid())
 	{
+		if (Data->Error != ERROR_NONE)
+		{
+			switch (Data->Error)
+			{
+			case ERROR_DISCONNECTION:
+				UNetworkFunctionLibrary::Get(this)->OnDisconnection.Broadcast(Data->Error);
+				return;
+			default:
+				break;
+			}
+		}
+
 		switch (Data->Code)
 		{
 		case USER_LOGIN:

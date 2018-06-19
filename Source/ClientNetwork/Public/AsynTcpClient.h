@@ -16,9 +16,13 @@ public:
 public:
 	FSocket* Connect(const FString& IP, int32 Port);
 
+	void OnDisconnection(ENetworkErrorCode NetworkErrorCode);
+
 	void Send(const void* Data, int32 DataSize);
 
 	void Read(TSharedPtr<FBase>& Data);
+
+	bool IsConnected() const;
 
 	static TSharedPtr<TAsynTcpClient> Get();
 
@@ -41,6 +45,8 @@ public:
 protected:
 	FRunnableThread* ReceiveThread;
 	FRunnableThread* SendThread;
+	
+	bool bIsConnected;
 
 private:
 	static TSharedPtr<TAsynTcpClient> Instance;

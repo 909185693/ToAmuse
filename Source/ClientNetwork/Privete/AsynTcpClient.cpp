@@ -11,6 +11,9 @@ FString TAsynTcpClient::Description = TEXT("AsynTcpServer");
 
 TAsynTcpClient::TAsynTcpClient()
 	: Socket(nullptr)
+	, ReceiveThread(nullptr)
+	, SendThread(nullptr)
+	, bIsConnected(false)
 {
 
 }
@@ -40,25 +43,46 @@ FSocket* TAsynTcpClient::Connect(const FString& IP, int32 Port)
 {
 	if (Socket == nullptr)
 	{
-		FIPv4Address IPv4Address;
-		FIPv4Address::Parse(IP, IPv4Address);
-
-		TSharedPtr<FInternetAddr> InternetAddr = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateInternetAddr();
-		InternetAddr->SetIp(IPv4Address.Value);
-		InternetAddr->SetPort(Port);
-
 		Socket = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateSocket(NAME_Stream, Description, false);
-		if (Socket && Socket->Connect(*InternetAddr))
+		//Socket->SetNonBlocking();
+	}
+
+	FIPv4Address IPv4Address;
+	FIPv4Address::Parse(IP, IPv4Address);
+
+	TSharedPtr<FInternetAddr> InternetAddr = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateInternetAddr();
+	InternetAddr->SetIp(IPv4Address.Value);
+	InternetAddr->SetPort(Port);
+
+	if (Socket && Socket->Connect(*InternetAddr))
+	{
+		bIsConnected = true;
+
+		if (ReceiveThread == nullptr)
 		{
 			ReceiveThread = FRunnableThread::Create(new FServerReceive(Get()), TEXT("ClientReceive"));
-			SendThread = FRunnableThread::Create(new FServerSend(Get()), TEXT("ClientSend"));
-
-			UE_LOG(LogClientNetworkModule, Warning, TEXT("Client connect server success!"));
 		}
 		else
 		{
-			UE_LOG(LogClientNetworkModule, Warning, TEXT("Client connect server failed!"));
+			ReceiveThread->Suspend(false);
 		}
+
+		if (SendThread == nullptr)
+		{
+			SendThread = FRunnableThread::Create(new FServerSend(Get()), TEXT("ClientSend"));
+		}
+		else
+		{
+			SendThread->Suspend(false);
+		}
+
+		UE_LOG(LogClientNetworkModule, Warning, TEXT("Client connect server success!"));
+	}
+	else
+	{
+		OnDisconnection(ERROR_DISCONNECTION);
+
+		UE_LOG(LogClientNetworkModule, Warning, TEXT("Client connect server failed!"));
 	}
 	
 	return Socket;
@@ -71,6 +95,31 @@ void TAsynTcpClient::Send(const void* Data, int32 DataSize)
 	delete QueueLock;
 }
 
+void TAsynTcpClient::OnDisconnection(ENetworkErrorCode NetworkErrorCode)
+{
+	bIsConnected = false;
+
+	TSharedPtr<FBase> ReceiveBase = MakeShareable(new FBase(NetworkErrorCode));
+
+	FScopeLock* ReceiveQueueLock = new FScopeLock(&ReceiveCritical);
+	ReceiveMessages.Enqueue(ReceiveBase);
+	delete ReceiveQueueLock;
+
+	FScopeLock* SendQueueLock = new FScopeLock(&SendCritical);
+	SendMessages.Empty();
+	delete SendQueueLock;
+
+	if (ReceiveThread != nullptr)
+	{
+		ReceiveThread->Suspend();
+	}
+
+	if (SendThread != nullptr)
+	{
+		SendThread->Suspend();
+	}
+}
+
 void TAsynTcpClient::Read(TSharedPtr<FBase>& Data)
 {
 	FScopeLock* ReceiveQueueLock = new FScopeLock(&ReceiveCritical);
@@ -79,6 +128,11 @@ void TAsynTcpClient::Read(TSharedPtr<FBase>& Data)
 		ReceiveMessages.Dequeue(Data);
 	}
 	delete ReceiveQueueLock;
+}
+
+bool TAsynTcpClient::IsConnected() const
+{
+	return bIsConnected;
 }
 
 TSharedPtr<TAsynTcpClient> TAsynTcpClient::Instance = nullptr;
