@@ -3,6 +3,6 @@
 #pragma once
 
 
-//EXPRESS_LOGIC_CODE(USER_LOGIN, 100000, "用户登录")
+EXPRESS_LOGIC_CODE(USER_LOGIN, 100000, "用户登录")
 
 
