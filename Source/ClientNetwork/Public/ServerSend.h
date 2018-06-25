@@ -8,7 +8,7 @@
 class FServerSend : public FRunnable
 {
 public:
-	FServerSend(TSharedPtr<TAsynTcpClient> InAsynTcpClient);
+	FServerSend(TSharedPtr<TAsynTcpClient, ESPMode::ThreadSafe> InAsynTcpClient);
 	~FServerSend();
 
 public:
@@ -21,5 +21,5 @@ public:
 private:
 	bool bStopping;
 
-	TSharedPtr<TAsynTcpClient> AsynTcpClient;
+	TSharedPtr<TAsynTcpClient, ESPMode::ThreadSafe> AsynTcpClient;
 };

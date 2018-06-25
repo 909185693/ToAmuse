@@ -5,10 +5,14 @@
 #include "ServerReceive.h"
 
 
-FServerReceive::FServerReceive(TSharedPtr<TAsynTcpClient> InAsynTcpClient)
+#define MAX_FAILD_READ_COUNT 3
+
+FServerReceive::FServerReceive(TSharedPtr<TAsynTcpClient, ESPMode::ThreadSafe> InAsynTcpClient)
 	: AsynTcpClient(InAsynTcpClient)
+	, bStopping(false)
+	, FailedReadCount(0)
 {
-	bStopping = false;
+
 }
 
 FServerReceive::~FServerReceive()
@@ -31,43 +35,36 @@ uint32 FServerReceive::Run()
 	}
 
 	TArray<uint8> ReceiveData;
-
-	uint8 Element = 0;
 	
-	const FTimespan WaitTime(200);
+	ReceiveData.Init(0.f, 65507u);
 
+	const FTimespan WaitTime(200);
+	
 	while (!bStopping)
 	{
-		if (!AsynTcpClient->IsConnected())
+		TSharedPtr<FSocket, ESPMode::ThreadSafe> Socket = AsynTcpClient->Socket;
+		if (Socket.IsValid())
 		{
-			continue;
-		}
-
-		FScopeLock* SocketLock = new FScopeLock(&AsynTcpClient->SocketCritical);
-		if (FSocket* Socket = AsynTcpClient->Socket)
-		{
-			uint32 Size = 0;
-			while (Socket->HasPendingData(Size))
+			if (Socket->Wait(ESocketWaitConditions::WaitForRead, WaitTime))
 			{
-				ReceiveData.Init(Element, FMath::Min(Size, 65507u));
-
 				int32 Read = 0;
 
-				if (Socket->Recv(ReceiveData.GetData(), ReceiveData.Num(), Read) && ReceiveData.Num() > 0)
-				{
-					TSharedPtr<FBase> ReceiveBase = MakeShareable((FBase*)ReceiveData.GetData());
+				Socket->Recv(ReceiveData.GetData(), ReceiveData.Num(), Read);
 
-					FScopeLock* ReceiveQueueLock = new FScopeLock(&AsynTcpClient->ReceiveCritical);
-					AsynTcpClient->ReceiveMessages.Enqueue(ReceiveBase);
-					delete ReceiveQueueLock;
-				}
-				else
+				if (Read > 0)
 				{
-					//AsynTcpClient->OnDisconnection(ERROR_DISCONNECTION);
+					TSharedPtr<FBase, ESPMode::ThreadSafe> ReceiveBase = MakeShareable((FBase*)ReceiveData.GetData());
+
+					AsynTcpClient->ReceiveMessages.Enqueue(ReceiveBase);
+				}
+				else if (++FailedReadCount >= MAX_FAILD_READ_COUNT)
+				{
+					FailedReadCount = 0;
+
+					AsynTcpClient->OnDisconnection(ERROR_DISCONNECTION);
 				}
 			}
 		}
-		delete SocketLock;
 	}
 
 	return 0;
@@ -80,5 +77,5 @@ void FServerReceive::Stop()
 
 void FServerReceive::Exit()
 {
-
+	
 }

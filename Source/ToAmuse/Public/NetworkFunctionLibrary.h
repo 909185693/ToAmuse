@@ -32,7 +32,7 @@ public:
 
 private:
 	UFUNCTION(BlueprintCallable, Category = "Network", meta = (WorldContext = "WorldContextObject"))
-	static bool Connect(UObject* WorldContextObject);
+	static void Connect(UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, Category = "Network|Login", meta = (WorldContext = "WorldContextObject"))
 	static void Login(UObject* WorldContextObject, const FText& UserName, const FText& Password);

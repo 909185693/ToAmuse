@@ -24,25 +24,23 @@ UNetworkFunctionLibrary* UNetworkFunctionLibrary::Get(UObject* WorldContextObjec
 	return Instance;
 }
 
-bool UNetworkFunctionLibrary::Connect(UObject* WorldContextObject)
+void UNetworkFunctionLibrary::Connect(UObject* WorldContextObject)
 {
 	UWorld* World = WorldContextObject ? WorldContextObject->GetWorld() : nullptr;
 	UTGameInstance* GameInstance = World ? Cast<UTGameInstance>(World->GetGameInstance()) : nullptr;
 	if (GameInstance != nullptr)
 	{
-		TSharedPtr<TAsynTcpClient> AsynTcpClient = TAsynTcpClient::Get();
+		TSharedPtr<TAsynTcpClient, ESPMode::ThreadSafe> AsynTcpClient = TAsynTcpClient::Get();
 		if (AsynTcpClient.IsValid())
 		{
-			return AsynTcpClient->Connect(GameInstance->ServerIP, GameInstance->ServerPort) != nullptr;
+			AsynTcpClient->Connect(GameInstance->ServerIP, GameInstance->ServerPort);
 		}
 	}
-
-	return false;
 }
 
 void UNetworkFunctionLibrary::Login(UObject* WorldContextObject, const FText& UserName, const FText& Password)
 {
-	TSharedPtr<TAsynTcpClient> AsynTcpClient = TAsynTcpClient::Get();
+	TSharedPtr<TAsynTcpClient, ESPMode::ThreadSafe> AsynTcpClient = TAsynTcpClient::Get();
 	if (AsynTcpClient.IsValid())
 	{
 		if (AsynTcpClient.IsValid())

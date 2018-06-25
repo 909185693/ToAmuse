@@ -6,6 +6,7 @@
 #include "Networking.h"
 #include "Structure.h"
 
+#define THREAD_STACK_SIZE 1 * 1024 * 1024
 
 class CLIENTNETWORK_API TAsynTcpClient
 {
@@ -14,19 +15,19 @@ public:
 	~TAsynTcpClient();
 
 public:
-	FSocket* Connect(const FString& IP, int32 Port);
+	TSharedPtr<FSocket, ESPMode::ThreadSafe> Connect(const FString& IP, int32 Port);
+
+	void OnConnect();
 
 	void OnDisconnection(ENetworkErrorCode NetworkErrorCode);
 
 	void Send(const void* Data, int32 DataSize);
 
-	void Read(TSharedPtr<FBase>& Data);
+	void Read(TSharedPtr<FBase, ESPMode::ThreadSafe>& Data);
+	
+	static TSharedPtr<TAsynTcpClient, ESPMode::ThreadSafe> Get();
 
-	bool IsConnected() const;
-
-	static TSharedPtr<TAsynTcpClient> Get();
-
-	FSocket* Socket;
+	TSharedPtr<FSocket, ESPMode::ThreadSafe> Socket;
 
 	static FString Description;
 	
@@ -34,20 +35,17 @@ public:
 	TArray<FSocket*> Clients;
 
 	// 消息队列
-	TQueue<TSharedPtr<FDatagram>> SendMessages;
-	TQueue<TSharedPtr<FBase>> ReceiveMessages;
+	TQueue<TSharedPtr<FDatagram, ESPMode::ThreadSafe>, EQueueMode::Mpsc> SendMessages;
+	TQueue<TSharedPtr<FBase, ESPMode::ThreadSafe>, EQueueMode::Mpsc> ReceiveMessages;
 
 	// 互斥锁
-	FCriticalSection SocketCritical;
-	FCriticalSection SendCritical;
-	FCriticalSection ReceiveCritical;
+	FCriticalSection Mutex;
 	
 protected:
 	FRunnableThread* ReceiveThread;
 	FRunnableThread* SendThread;
+	FRunnableThread* ConnectThread;
 	
-	bool bIsConnected;
-
 private:
-	static TSharedPtr<TAsynTcpClient> Instance;
+	static TSharedPtr<TAsynTcpClient, ESPMode::ThreadSafe> Instance;
 };

@@ -18,7 +18,7 @@ void UTGameInstance::Init()
 
 	if (!GetWorld()->IsNetMode(NM_DedicatedServer))
 	{
-		TSharedPtr<TAsynTcpClient> AsynTcpClient = TAsynTcpClient::Get();		
+		TSharedPtr<TAsynTcpClient, ESPMode::ThreadSafe> AsynTcpClient = TAsynTcpClient::Get();		
 		if (AsynTcpClient.IsValid())
 		{
 			AsynTcpClient->Connect(ServerIP, ServerPort);
@@ -47,7 +47,7 @@ bool UTGameInstance::Tick(float DeltaSeconds)
 
 void UTGameInstance::NetworkProcess()
 {
-	TSharedPtr<FBase> Data;
+	TSharedPtr<FBase,  ESPMode::ThreadSafe> Data;
 	TAsynTcpClient::Get()->Read(Data);
 	if (Data.IsValid())
 	{

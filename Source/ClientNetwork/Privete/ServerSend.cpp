@@ -5,7 +5,7 @@
 #include "ServerSend.h"
 
 
-FServerSend::FServerSend(TSharedPtr<TAsynTcpClient> InAsynTcpClient)
+FServerSend::FServerSend(TSharedPtr<TAsynTcpClient, ESPMode::ThreadSafe> InAsynTcpClient)
 	: AsynTcpClient(InAsynTcpClient)
 {
 
@@ -34,21 +34,15 @@ uint32 FServerSend::Run()
 
 	while (!bStopping)
 	{
-		if (!AsynTcpClient->IsConnected())
-		{
-			continue;
-		}
-
-		FScopeLock* QueueLock = new FScopeLock(&AsynTcpClient->SendCritical);
 		if (!AsynTcpClient->SendMessages.IsEmpty())
 		{
-			TSharedPtr<FDatagram> Datagram;
+			TSharedPtr<FDatagram, ESPMode::ThreadSafe> Datagram;
 			AsynTcpClient->SendMessages.Dequeue(Datagram);
 
 			if (Datagram.IsValid())
 			{
-				FScopeLock* SocketLock = new FScopeLock(&AsynTcpClient->SocketCritical);
-				if (FSocket* Socket = AsynTcpClient->Socket)
+				TSharedPtr<FSocket, ESPMode::ThreadSafe> Socket = AsynTcpClient->Socket;
+				if (Socket.IsValid())
 				{
 					int32 Sent = 0;
 
@@ -61,12 +55,10 @@ uint32 FServerSend::Run()
 						UE_LOG(LogClientNetworkModule, Warning, TEXT("FServerSend::Run() Failed!"));
 					}
 				}
-				delete SocketLock;
 
 				Datagram.Reset();
 			}
 		}
-		delete QueueLock;
 	}
 
 	return 0;
