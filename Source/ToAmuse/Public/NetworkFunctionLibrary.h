@@ -6,7 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "NetworkFunctionLibrary.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDisconnectionSignature, int32, ErrorCode);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnConnectSignature, bool, bWasSuccessful);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLoginSignature, int32, ErrorCode);
 
 /**
@@ -22,7 +22,7 @@ class TOAMUSE_API UNetworkFunctionLibrary : public UBlueprintFunctionLibrary
 	
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Network")
-	FOnDisconnectionSignature OnDisconnection;
+	FOnConnectSignature OnConnect;
 
 	UPROPERTY(BlueprintAssignable, Category = "Network")
 	FOnLoginSignature OnLogin;
@@ -39,4 +39,7 @@ private:
 
 private:
 	static class UNetworkFunctionLibrary* Instance;
+
+protected:
+	void OnSocketConnect(bool bWasSuccessful);
 };

@@ -33,7 +33,4 @@ protected:
 
 	/** Handle to various registered delegates */
 	FDelegateHandle TickDelegateHandle;
-
-protected:
-	void NetworkProcess();
 };

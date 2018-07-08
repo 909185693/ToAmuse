@@ -6,7 +6,8 @@
 #include "Networking.h"
 #include "Structure.h"
 
-#define THREAD_STACK_SIZE 1 * 1024 * 1024
+class FServerReceive;
+class FConnectServer;
 
 class CLIENTNETWORK_API TAsynTcpClient
 {
@@ -15,36 +16,43 @@ public:
 	~TAsynTcpClient();
 
 public:
-	TSharedPtr<FSocket, ESPMode::ThreadSafe> Connect(const FString& IP, int32 Port);
+	FSocket* Connect(const FString& IP, int32 Port);
 
-	void OnConnect();
+	void Send(const TSharedRef<TArray<uint8>, ESPMode::ThreadSafe>& Data);
+		
+	bool Read(TSharedPtr<FBase, ESPMode::ThreadSafe>& OutData);
 
-	void OnDisconnection(ENetworkErrorCode NetworkErrorCode);
-
-	void Send(const void* Data, int32 DataSize);
-
-	void Read(TSharedPtr<FBase, ESPMode::ThreadSafe>& Data);
-	
 	static TSharedPtr<TAsynTcpClient, ESPMode::ThreadSafe> Get();
 
-	TSharedPtr<FSocket, ESPMode::ThreadSafe> Socket;
+	// Socket
+	FSocket* Socket;
 
+	// socket描述
 	static FString Description;
 	
 	// 客户端列表
 	TArray<FSocket*> Clients;
 
-	// 消息队列
-	TQueue<TSharedPtr<FDatagram, ESPMode::ThreadSafe>, EQueueMode::Mpsc> SendMessages;
+	// 接收消息队列
 	TQueue<TSharedPtr<FBase, ESPMode::ThreadSafe>, EQueueMode::Mpsc> ReceiveMessages;
 
-	// 互斥锁
-	FCriticalSection Mutex;
-	
 protected:
 	FRunnableThread* ReceiveThread;
-	FRunnableThread* SendThread;
 	FRunnableThread* ConnectThread;
+
+protected:
+	DECLARE_DELEGATE_OneParam(FOnConnect, bool /*bWasSuccessful*/);
+	FOnConnect OnConnectDelegate;
+
+	DECLARE_DELEGATE(FOnBreaked);
+	FOnBreaked OnBreakedDelegate;
+
+public:
+	FOnConnect& OnConnect() { return OnConnectDelegate; }
+	FOnBreaked& OnBreaked() { return OnBreakedDelegate; }
+
+	void OnSocketConnect(bool bWasSuccessful);
+	void OnSocketBreaked();
 	
 private:
 	static TSharedPtr<TAsynTcpClient, ESPMode::ThreadSafe> Instance;

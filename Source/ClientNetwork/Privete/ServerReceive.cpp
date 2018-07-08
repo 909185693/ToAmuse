@@ -6,6 +6,7 @@
 
 
 #define MAX_FAILD_READ_COUNT 3
+#define LIMIT_READER_SIZE 65536u // 数据大小限制
 
 FServerReceive::FServerReceive(TSharedPtr<TAsynTcpClient, ESPMode::ThreadSafe> InAsynTcpClient)
 	: AsynTcpClient(InAsynTcpClient)
@@ -42,26 +43,36 @@ uint32 FServerReceive::Run()
 	
 	while (!bStopping)
 	{
-		TSharedPtr<FSocket, ESPMode::ThreadSafe> Socket = AsynTcpClient->Socket;
-		if (Socket.IsValid())
+		FSocket*& Socket = AsynTcpClient->Socket;
+		if (Socket != nullptr)
 		{
-			if (Socket->Wait(ESocketWaitConditions::WaitForRead, WaitTime))
+			if (!Socket->Wait(ESocketWaitConditions::WaitForRead, WaitTime))
 			{
-				int32 Read = 0;
+				continue;
+			}
 
-				Socket->Recv(ReceiveData.GetData(), ReceiveData.Num(), Read);
+			FArrayReaderPtr Reader = MakeShareable(new FArrayReader(true));
+			Reader->SetNumUninitialized(LIMIT_READER_SIZE);
+			
+			int32 Read = 0;
+			Socket->Recv(Reader->GetData(), LIMIT_READER_SIZE, Read);
+			if (0 < Read)
+			{
+				FailedReadCount = 0;
 
-				if (Read > 0)
-				{
-					TSharedPtr<FBase, ESPMode::ThreadSafe> ReceiveBase = MakeShareable((FBase*)ReceiveData.GetData());
+				Reader->SetNumUninitialized(Read);
 
-					AsynTcpClient->ReceiveMessages.Enqueue(ReceiveBase);
-				}
-				else if (++FailedReadCount >= MAX_FAILD_READ_COUNT)
+				AsynTcpClient->ReceiveMessages.Enqueue(MakeShareable((FBase*)Reader->GetData()));
+			}
+			else
+			{
+				FailedReadCount++;
+
+				if (FailedReadCount >= 3)
 				{
 					FailedReadCount = 0;
 
-					AsynTcpClient->OnDisconnection(ERROR_DISCONNECTION);
+					AsynTcpClient->OnSocketBreaked();
 				}
 			}
 		}

@@ -16,15 +16,6 @@ void UTGameInstance::Init()
 {
 	Super::Init();
 
-	if (!GetWorld()->IsNetMode(NM_DedicatedServer))
-	{
-		TSharedPtr<TAsynTcpClient, ESPMode::ThreadSafe> AsynTcpClient = TAsynTcpClient::Get();		
-		if (AsynTcpClient.IsValid())
-		{
-			AsynTcpClient->Connect(ServerIP, ServerPort);
-		}
-	}
-
 	// Register delegate for ticker callback
 	TickDelegate = FTickerDelegate::CreateUObject(this, &UTGameInstance::Tick);
 	TickDelegateHandle = FTicker::GetCoreTicker().AddTicker(TickDelegate);
@@ -40,38 +31,5 @@ void UTGameInstance::Shutdown()
 
 bool UTGameInstance::Tick(float DeltaSeconds)
 {
-	NetworkProcess();
-
 	return true;
-}
-
-void UTGameInstance::NetworkProcess()
-{
-	TSharedPtr<FBase,  ESPMode::ThreadSafe> Data;
-	TAsynTcpClient::Get()->Read(Data);
-	if (Data.IsValid())
-	{
-		if (Data->Error != ERROR_NONE)
-		{
-			switch (Data->Error)
-			{
-			case ERROR_DISCONNECTION:
-				UNetworkFunctionLibrary::Get(this)->OnDisconnection.Broadcast(Data->Error);
-				return;
-			default:
-				break;
-			}
-		}
-
-		switch (Data->Code)
-		{
-		case USER_LOGIN:
-			UNetworkFunctionLibrary::Get(this)->OnLogin.Broadcast(Data->Error);
-			break;
-		default:
-			break;
-		}
-
-		UE_LOG(LogTemp, Warning, TEXT("Code[%d] Error[%d]"), Data->Code, Data->Error);
-	}
 }

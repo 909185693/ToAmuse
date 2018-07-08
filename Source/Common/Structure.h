@@ -10,29 +10,36 @@
 struct FBase
 {
 	FBase()
-		: Code(0)
-		, Error(0)
+		: Code(LOGIC_NONE)
+		, Error(ERROR_NONE)
 	{
 
 	}
 
-	FBase(int32 InError)
-		: Code(0)
+	FBase(ENetworkErrorCode InError)
+		: Code(LOGIC_NONE)
 		, Error(InError)
 	{
 
 	}
 
-	FBase(int32 InCode, int32 InError)
+	FBase(ENetworkLogicCode InCode)
+		: Code(InCode)
+		, Error(ERROR_NONE)
+	{
+
+	}
+
+	FBase(ENetworkLogicCode InCode, ENetworkErrorCode InError)
 		: Code(InCode)
 		, Error(InError)
 	{
 
 	}
 
-	int32 Code;
+	ENetworkLogicCode Code;
 
-	int32 Error;
+	ENetworkErrorCode Error;
 };
 
 struct FDatagram

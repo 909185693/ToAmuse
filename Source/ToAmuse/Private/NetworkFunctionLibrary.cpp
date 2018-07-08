@@ -33,6 +33,7 @@ void UNetworkFunctionLibrary::Connect(UObject* WorldContextObject)
 		TSharedPtr<TAsynTcpClient, ESPMode::ThreadSafe> AsynTcpClient = TAsynTcpClient::Get();
 		if (AsynTcpClient.IsValid())
 		{
+			AsynTcpClient->OnConnect().BindUObject(Get(World), &UNetworkFunctionLibrary::OnSocketConnect);
 			AsynTcpClient->Connect(GameInstance->ServerIP, GameInstance->ServerPort);
 		}
 	}
@@ -50,9 +51,17 @@ void UNetworkFunctionLibrary::Login(UObject* WorldContextObject, const FText& Us
 			FCString::Strcpy(LoginInfo.UserName, *UserName.ToString());
 			FCString::Strcpy(LoginInfo.Password, *Password.ToString());
 
-			AsynTcpClient->Send(&LoginInfo, sizeof(FLoginInfo));
+			TSharedRef<TArray<uint8>, ESPMode::ThreadSafe> Data = MakeShareable(new TArray<uint8>());
+			FMemory::Memcmp(Data->GetData(), &LoginInfo, sizeof(FLoginInfo));
+
+			AsynTcpClient->Send(Data);
 		}
 	}
+}
+
+void UNetworkFunctionLibrary::OnSocketConnect(bool bWasSuccessful)
+{
+	OnConnect.Broadcast(bWasSuccessful);
 }
 
 class UNetworkFunctionLibrary* UNetworkFunctionLibrary::Instance = nullptr;

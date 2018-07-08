@@ -20,6 +20,8 @@ FConnectServer::FConnectServer(TSharedPtr<TAsynTcpClient, ESPMode::ThreadSafe> I
 FConnectServer::~FConnectServer()
 {
 	AsynTcpClient.Reset();
+
+	UE_LOG(LogClientNetworkModule, Warning, TEXT("FConnectServer::~FConnectServer() callback!"));
 }
 
 bool FConnectServer::Init()
@@ -36,21 +38,24 @@ uint32 FConnectServer::Run()
 		return 0;
 	}
 
+	const FTimespan WaitTime(200);
+
 	while (bHostConnected && !bStopping)
 	{
-		TSharedPtr<FSocket, ESPMode::ThreadSafe> Socket = AsynTcpClient->Socket;
-		if (Socket.IsValid())
+		FSocket*& Socket = AsynTcpClient->Socket;
+		if (Socket != nullptr)
 		{
-			if (Socket->Wait(ESocketWaitConditions::WaitForReadOrWrite, FTimespan(200)))
+			if (Socket->Wait(ESocketWaitConditions::WaitForReadOrWrite, WaitTime))
 			{
 				bHostConnected = true;
-				AsynTcpClient->OnConnect();
+
+				AsynTcpClient->OnSocketConnect(true);
 			}
 			else if (++ConnectedFailedNum == MAX_CONNECT_FAILED_NUM)
 			{
 				ConnectedFailedNum = 0;
 
-				AsynTcpClient->OnDisconnection(ERROR_DISCONNECTION);
+				AsynTcpClient->OnSocketConnect(false);
 			}
 		}
 	}
