@@ -14,20 +14,25 @@ public class ToAmuse : ModuleRules
             "UMG",
             "Networking",
             "Engine",
-            "InputCore"
+            "InputCore",
+            "GameplayTasks",
+            "OnlineSubsystem"
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {
-            "OnlineSubsystem",
-            "LoginServer",
-            "ClientNetwork"
+            "InputCore",
+            "Slate",
+            "SlateCore",
+            "Json",
+            "ApplicationCore"
+        });
+
+        DynamicallyLoadedModuleNames.AddRange(new string[] {
+            "OnlineSubsystemSteam"
         });
 
         PublicIncludePaths.AddRange(
             new string[] {
-                "Common",
-                "LoginServer/Public",
-                "ClientNetwork/Public"
             }
         );
     }

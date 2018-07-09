@@ -1,4 +1,4 @@
-// Copyright 2018 by NiHongjian. All Rights Reserved.
+// Copyright 2018 by January. All Rights Reserved.
 
 #include "TWeapon.h"
 #include "TGameplayStatics.h"
