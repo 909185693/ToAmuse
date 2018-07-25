@@ -100,5 +100,5 @@ void ATWeapon::CheckAction(bool bIsForce)
 
 const TEnumAsByte<enum ENetRole> ATWeapon::GetOwnerRole() const
 {
-	return GetOwner() ? GetOwner()->Role : ROLE_None;
+	return GetOwner() ? GetOwner()->Role : TEnumAsByte<enum ENetRole>(ROLE_None);
 }

@@ -146,7 +146,7 @@ bool UAdvancedMovementComponent::CanSprintInCurrentState() const
 	return IsFalling() || IsMovingOnGround();
 }
 
-void UAdvancedMovementComponent::UpdateCharacterStateBeforeMovement()
+void UAdvancedMovementComponent::UpdateCharacterStateBeforeMovement(float DeltaSeconds)
 {
 	// Check for a change in crouch state. Players toggle crouch by changing bWantsToCrouch.
 	const bool bAllowedToCrouch = CanCrouchInCurrentState();
@@ -171,9 +171,9 @@ void UAdvancedMovementComponent::UpdateCharacterStateBeforeMovement()
 	}
 }
 
-void UAdvancedMovementComponent::UpdateCharacterStateAfterMovement()
+void UAdvancedMovementComponent::UpdateCharacterStateAfterMovement(float DeltaSeconds)
 {
-	Super::UpdateCharacterStateAfterMovement();
+	Super::UpdateCharacterStateAfterMovement(DeltaSeconds);
 
 	// Unsprint if no longer allowed to be crouched
 	if (IsSprinting() && !CanSprintInCurrentState())

@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "4.19",
+	"EngineAssociation": "{B41ABEBD-423D-6753-5277-ECA1F27ADA9C}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -11,25 +11,11 @@
 			"AdditionalDependencies": [
 				"Engine"
 			]
-		},
-		{
-			"Name": "LoginServer",
-			"Type": "Runtime",
-			"LoadingPhase": "PreLoadingScreen"
-		},
-		{
-			"Name": "ClientNetwork",
-			"Type": "Runtime",
-			"LoadingPhase": "PreLoadingScreen"
 		}
 	],
 	"Plugins": [
 		{
 			"Name": "OnlineFramework",
-			"Enabled": true
-		},
-		{
-			"Name": "OnlineSubsystemSteam",
 			"Enabled": true
 		}
 	]

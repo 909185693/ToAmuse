@@ -101,10 +101,10 @@ public:
 	virtual bool CanSprintInCurrentState() const;
 
 	/** Update the character state in PerformMovement right before doing the actual position change */
-	virtual void UpdateCharacterStateBeforeMovement() override;
+	virtual void UpdateCharacterStateBeforeMovement(float DeltaSeconds) override;
 
 	/** Update the character state in PerformMovement after the position change. Some rotation updates happen after this. */
-	virtual void UpdateCharacterStateAfterMovement();
+	virtual void UpdateCharacterStateAfterMovement(float DeltaSeconds);
 
 protected:
 	/** Called after MovementMode has changed. Base implementation does special handling for starting certain modes, then notifies the CharacterOwner. */

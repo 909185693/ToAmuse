@@ -27,10 +27,6 @@ public class ToAmuse : ModuleRules
             "ApplicationCore"
         });
 
-        DynamicallyLoadedModuleNames.AddRange(new string[] {
-            "OnlineSubsystemSteam"
-        });
-
         PublicIncludePaths.AddRange(
             new string[] {
             }

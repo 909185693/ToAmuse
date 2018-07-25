@@ -31,21 +31,21 @@ void UTAnimInstance::UpdateMeshRotation(float DeltaSeconds)
 {
 	if (OwnerPawn != nullptr)
 	{
-		FRotator TargetRotation = CharacterRotation + FRotator(0.f, -90.f, 0.f);
+		const FRotator& NewRotation = CharacterRotation + FRotator(0.f, -90.f, 0.f);
 
-		OwnerPawn->GetMesh()->SetWorldRotation(TargetRotation);
+		OwnerPawn->GetMesh()->SetWorldRotation(NewRotation);
 	}
 }
 
-void UTAnimInstance::SetCharacterRotation(const FRotator& TargetRotation, bool bInterpRotation, float InterpSpeed, float DeltaSeconds)
+void UTAnimInstance::SetCharacterRotation(const FRotator& NewRotation, bool bInterpRotation, float InterpSpeed, float DeltaSeconds)
 {
 	if (bInterpRotation)
 	{
-		CharacterRotation = FMath::RInterpTo(CharacterRotation, TargetRotation, DeltaSeconds, InterpSpeed);
+		CharacterRotation = FMath::RInterpTo(CharacterRotation, NewRotation, DeltaSeconds, InterpSpeed);
 	}
 	else
 	{
-		CharacterRotation = TargetRotation;
+		CharacterRotation = NewRotation;
 	}
 }
 

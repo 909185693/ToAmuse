@@ -1,9 +1,7 @@
 {
-	"BuildId": "3944462",
+	"BuildId": "e1dfbd27-8ebf-4dcc-86c2-68ca0856d6cd",
 	"Modules": 
 	{
-		"ClientNetwork": "UE4Editor-ClientNetwork.dll",
-		"LoginServer": "UE4Editor-LoginServer.dll",
 		"ToAmuse": "UE4Editor-ToAmuse.dll"
 	}
 }

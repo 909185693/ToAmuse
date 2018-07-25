@@ -78,7 +78,7 @@ public:
 	void UpdateMeshRotation(float DeltaSeconds);
 
 	UFUNCTION(BlueprintCallable, Category = "Animation")
-	void SetCharacterRotation(const FRotator& TargetRotation, bool bInterpRotation = false, float InterpSpeed = 0.f, float DeltaSeconds = 0.f);
+	void SetCharacterRotation(const FRotator& NewRotation, bool bInterpRotation = false, float InterpSpeed = 0.f, float DeltaSeconds = 0.f);
 
 	UFUNCTION(BlueprintCallable, Category = "Animation")
 	bool WasWhetherRange(float Value, float MinRangeTrue, float MaxRangeTrue, float MinRangeFalse, float MaxRangeFlase, bool bWhether);
