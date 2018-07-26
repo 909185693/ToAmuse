@@ -7,6 +7,16 @@
 
 
 UENUM(BlueprintType)
+namespace EMovementPose
+{
+	enum Type
+	{
+		ALS,
+		Rifle
+	};
+}
+
+UENUM(BlueprintType)
 namespace EMovementDirection
 {
 	enum Type
@@ -121,6 +131,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input, meta = (ClampMin = "-180.0", ClampMax = "180.0"))
 	float Direction;
 	
+	/** 运动应用姿势 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input)
+	TEnumAsByte<EMovementPose::Type> MovementPose;
+
 	/** 运动方向 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input)
 	TEnumAsByte<EMovementDirection::Type> MovementDirection;
